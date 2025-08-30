@@ -54,129 +54,127 @@
         }
     </style>
     <style>
-        /* Estilos para impressão - MELHORADOS */
+        /* Estilos para impressão - VERSÃO MELHORADA */
         @media print {
-            body {
-                font-size: 11pt;
-                line-height: 1.3;
-                color: #000;
-                background: #fff;
-                font-family: "Times New Roman", Times, serif;
+            /* Define as margens da página e remove informações do cabeçalho/rodapé do navegador */
+            @page {
+                size: A4;
+                margin: 2cm 1.5cm;
             }
-            
+
+            body {
+                font-family: "Times New Roman", Times, serif;
+                font-size: 11pt;
+                line-height: 1.4;
+                color: #000;
+                background-color: #fff !important;
+            }
+
+            /* Esconde elementos de interface que não fazem sentido na impressão */
+            .no-print, header nav, #filtros, #paginacao, footer, #modal-trabalho, .sumario-interativo {
+                display: none !important;
+            }
+
+            /* Garante que o container principal ocupe toda a largura */
             .container {
                 width: 100% !important;
                 max-width: 100% !important;
                 padding: 0 !important;
                 margin: 0 !important;
+                box-shadow: none !important;
             }
-            
+
+            /* Estiliza o cabeçalho do documento */
             header {
-                margin-bottom: 0.5cm;
                 text-align: center;
-                page-break-after: avoid;
-            }
-            
-            h1, h2, h3, h4 {
-                color: #000 !important;
-                page-break-after: avoid;
-            }
-            
-            h1 {
-                font-size: 16pt;
-                margin-bottom: 0.3cm;
-            }
-            
-            h2 {
-                font-size: 14pt;
-                border-bottom: 1pt solid #000;
-                margin-top: 0.7cm;
-                margin-bottom: 0.5cm;
-                padding-bottom: 0.2cm;
-            }
-            
-            section {
+                border-bottom: 2px solid #000;
+                padding-bottom: 1cm;
                 margin-bottom: 1cm;
-                page-break-inside: avoid;
+                page-break-after: avoid;
             }
-            
-            .no-print {
-                display: none !important;
+            header h1 { font-size: 22pt; }
+            header h2 { font-size: 16pt; border: none; }
+
+            /* Estilos para títulos de seção */
+            h2 {
+                font-size: 16pt;
+                font-weight: bold;
+                margin-top: 1.5cm;
+                margin-bottom: 0.8cm;
+                border-bottom: 1px solid #000;
+                padding-bottom: 0.2cm;
+                page-break-after: avoid; /* Evita que a página quebre logo após um título */
             }
-            
+
+            /* Força quebras de página antes de seções principais para melhor organização */
             .print-break {
                 page-break-before: always;
             }
-            
-            .print-full-width {
-                width: 100% !important;
+
+            /* Remove sombras, bordas arredondadas e cores de fundo desnecessárias */
+            .shadow, .shadow-lg, .shadow-md, .rounded-lg, .rounded-xl, .rounded-full, .bg-white, .bg-gray-50, .bg-blue-100 {
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                background-color: transparent !important;
+                border: none !important;
             }
-            
+
+            /* Força layouts de grid e flex para um fluxo de bloco, que é mais seguro para impressão */
+            .grid, .flex {
+                display: block !important;
+            }
+
+            /* Melhora a apresentação da lista de trabalhos */
+            #lista-trabalhos {
+                display: block !important;
+            }
+            #lista-trabalhos > div {
+                display: block !important;
+                border-top: 1px solid #ccc;
+                padding-top: 0.5cm;
+                margin-bottom: 0.5cm;
+                page-break-inside: avoid; /* Tenta manter cada card em uma única página */
+            }
+            #lista-trabalhos h3 {
+                font-size: 12pt;
+                font-weight: bold;
+            }
+
+            /* Garante que as tabelas fiquem legíveis */
             table {
                 width: 100%;
                 border-collapse: collapse;
                 font-size: 9pt;
                 page-break-inside: avoid;
             }
-            
             th, td {
-                border: 0.5pt solid #000;
+                border: 1px solid #000;
                 padding: 0.2cm;
                 text-align: left;
             }
-            
             th {
-                background-color: #f0f0f0 !important;
+                background-color: #e0e0e0 !important; /* Cor de fundo para cabeçalhos de tabela */
                 font-weight: bold;
             }
-            
-            .bg-white, .bg-gray-50, .bg-blue-100, .bg-green-100, .bg-purple-100 {
-                background-color: #fff !important;
-                border: 0.5pt solid #ccc !important;
+            tbody tr:nth-child(even) {
+                background-color: #f5f5f5 !important; /* Linhas zebradas para melhor leitura */
             }
-            
-            .shadow, .shadow-md {
-                box-shadow: none !important;
-            }
-            
-            .rounded, .rounded-lg {
-                border-radius: 0 !important;
-            }
-            
-            #nuvem-palavras-canvas {
-                height: 250px;
-                border: 0.5pt solid #ccc;
-            }
-            
-            /* Melhorar a legibilidade dos links */
-            a {
-                color: #000 !important;
-                text-decoration: underline;
-            }
-            
-            /* Evitar quebra de linhas em elementos importantes */
-            tr, td, th {
-                page-break-inside: avoid;
-            }
-            
-            /* Melhorar visualização de cards */
-            .grid > div {
-                break-inside: avoid;
-                margin-bottom: 0.5cm;
-            }
-            
-            /* Ajustar lista de trabalhos para impressão */
-            #lista-trabalhos > div {
-                border: 0.5pt solid #ccc;
-                margin-bottom: 0.3cm;
-                padding: 0.3cm;
-                break-inside: avoid;
-            }
-            
-            /* Ajustar gráficos para impressão */
+
+            /* Garante que os gráficos (canvas) se ajustem à página */
             canvas {
                 max-width: 100% !important;
                 height: auto !important;
+            }
+            
+            /* Formata links para serem claramente identificáveis na impressão */
+            a {
+                color: #000 !important;
+                text-decoration: underline !important;
+            }
+            a[href]:after {
+                /* Opcional: mostra a URL completa após o link */
+                /* content: " (" attr(href) ")"; */
+                /* font-size: 9pt; */
             }
         }
     </style>
@@ -191,9 +189,10 @@
     <div class="container mx-auto px-4 py-8">
         <!-- Cabeçalho -->
         <header class="text-center mb-12">
-            <h1 class="text-4xl font-bold mb-2">Repositório Institucional UFF</h1>
-            <h2 class="text-2xl text-blue-700">Trabalhos Acadêmicos em Biblioteconomia e Ciência da Informação</h2>
+            <h1 class="text-4xl font-bold mb-2">Repositório Institucional da Universidade Federal Fluminense</h1>
+            <h2 class="text-2xl text-blue-700">Insights sobre trabalhos acadêmicos publicados no programa de graduação em Biblioteconomia e Documentação e pós-graduação Ciência da Informação da UFF</h2>
             <p class="mt-4 text-gray-600">Relatório gerado em <span id="current-date"></span></p>
+            <p class="mt-1 text-gray-600">Dataset obtido em <span id="dataset-date"></span></p>
         </header>
 
         <!-- Sumário Horizontal -->
@@ -311,8 +310,8 @@
 
         <!-- Dados Gerais -->
         <section id="dados-gerais" class="mb-12 print-break">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-2xl font-semibold border-b pb-2">Dados Gerais</h2>
+            <div class="flex justify-between items-center content-center mb-4 border-b pb-2">
+                <h2 class="text-2xl font-semibold">Dados Gerais</h2>
                 <div class="flex gap-2 no-print">
                     <button id="btn-export-pdf" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -320,12 +319,12 @@
                         </svg>
                         Exportar PDF
                     </button>
-                    <button onclick="window.print()" class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 flex items-center">
+                    <!-- <button onclick="window.print()" class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m4 4h6a2 2 0 002-2v-4a2 2 0 00-2-2h-6a2 2 0 00-2 2v4a2 2 0 002 2z" />
                         </svg>
                         Imprimir
-                    </button>
+                    </button> -->
                 </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -597,6 +596,7 @@
 
     <script>
         // Dados do JSON (exemplo reduzido para demonstração)
+        let datasetDate = '2025-08-30'; // Data do dataset (pode ser extraída do JSON se disponível)
         let data = [];
 
         // Variáveis globais
@@ -641,6 +641,7 @@
                 const agora = new Date();
                 document.getElementById('data-processamento').textContent = agora.toLocaleString('pt-BR');
                 document.getElementById('current-date').textContent = agora.toLocaleString('pt-BR');
+                document.getElementById('dataset-date').textContent = new Date(datasetDate).toLocaleDateString('pt-BR');
                 
                 // Processar dados
                 processarDados();
@@ -1788,110 +1789,51 @@
             });
         }
 
-        // Função para exportar PDF
+        // Função para exportar PDF (VERSÃO MELHORADA)
         function exportarParaPDF() {
+            alert("A exportação para PDF está sendo gerada. Este processo pode levar alguns instantes. Por favor, aguarde.");
+
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('p', 'mm', 'a4');
-            const margin = 15;
-            let currentY = margin;
+            const doc = new jsPDF({
+                orientation: 'p',
+                unit: 'mm',
+                format: 'a4'
+            });
+
+            // Seleciona o container principal que queremos exportar
+            const content = document.querySelector('.container');
             
-            // Adicionar título principal
-            doc.setFontSize(16);
-            doc.setFont(undefined, 'bold');
-            doc.text('Relatório de Trabalhos Acadêmicos - Biblioteconomia UFF', 105, currentY, { align: 'center' });
-            currentY += 10;
-            
-            doc.setFontSize(10);
-            doc.setFont(undefined, 'normal');
-            doc.text(`Relatório gerado em: ${new Date().toLocaleString('pt-BR')}`, 105, currentY, { align: 'center' });
-            currentY += 15;
-            
-            // Função para adicionar nova página se necessário
-            function checkPageHeight(additionalHeight = 0) {
-                if (currentY + additionalHeight > 270) { // 270mm é aproximadamente a altura útil de A4
+            html2canvas(content, {
+                // Aumentar a escala melhora drasticamente a resolução da imagem
+                scale: 2.5, 
+                useCORS: true,
+                logging: false,
+                backgroundColor: '#ffffff'
+            }).then(canvas => {
+                const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                const imgWidth = 210; // Largura de uma página A4 em mm
+                const pageHeight = 295; // Altura de uma página A4 em mm
+                const imgHeight = canvas.height * imgWidth / canvas.width;
+                let heightLeft = imgHeight;
+                let position = 0;
+
+                // Adiciona a primeira parte da imagem
+                doc.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+
+                // Adiciona novas páginas para o restante da imagem
+                while (heightLeft > 0) {
+                    position = heightLeft - imgHeight;
                     doc.addPage();
-                    currentY = margin;
-                    return true;
-                }
-                return false;
-            }
-            
-            // Capturar cada seção sequencialmente
-            const captureSection = (sectionId, sectionTitle) => {
-                return new Promise((resolve) => {
-                    const section = document.getElementById(sectionId);
-                    if (!section) {
-                        resolve();
-                        return;
-                    }
-                    
-                    // Adicionar título da seção
-                    checkPageHeight(20);
-                    doc.setFontSize(12);
-                    doc.setFont(undefined, 'bold');
-                    doc.text(sectionTitle, margin, currentY);
-                    currentY += 8;
-                    
-                    // Clonar a seção e aplicar estilos de impressão
-                    const sectionClone = section.cloneNode(true);
-                    sectionClone.style.width = '170mm';
-                    sectionClone.style.padding = '5mm';
-                    sectionClone.style.boxSizing = 'border-box';
-                    document.body.appendChild(sectionClone);
-                    
-                    // Capturar como imagem
-                    html2canvas(sectionClone, {
-                        scale: 2,
-                        useCORS: true,
-                        logging: false,
-                        backgroundColor: '#ffffff'
-                    }).then(canvas => {
-                        document.body.removeChild(sectionClone);
-                        
-                        const imgData = canvas.toDataURL('image/jpeg', 0.8);
-                        const imgWidth = 180;
-                        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                        
-                        checkPageHeight(imgHeight);
-                        doc.addImage(imgData, 'JPEG', margin, currentY, imgWidth, imgHeight);
-                        currentY += imgHeight + 10;
-                        
-                        resolve();
-                    }).catch(error => {
-                        console.error('Erro ao capturar seção:', error);
-                        document.body.removeChild(sectionClone);
-                        resolve();
-                    });
-                });
-            };
-            
-            // Capturar seções em sequência
-            const sections = [
-                { id: 'dados-gerais', title: 'Dados Gerais' },
-                { id: 'trabalhos', title: 'Lista de Trabalhos' },
-                { id: 'indice-orientadores', title: 'Índice de Orientadores' },
-                { id: 'indice-autores', title: 'Índice de Autores' },
-                { id: 'evolucao-academica', title: 'Evolução Acadêmica' },
-                { id: 'nuvem-palavras', title: 'Nuvem de Palavras' }
-            ];
-            
-            // Processar sequencialmente
-            let currentIndex = 0;
-            
-            function processNextSection() {
-                if (currentIndex >= sections.length) {
-                    doc.save('relatorio-trabalhos-academicos-uff.pdf');
-                    return;
+                    doc.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
                 }
                 
-                const section = sections[currentIndex];
-                captureSection(section.id, section.title).then(() => {
-                    currentIndex++;
-                    processNextSection();
-                });
-            }
-            
-            processNextSection();
+                doc.save('relatorio-trabalhos-academicos-uff.pdf');
+            }).catch(error => {
+                console.error("Erro ao gerar o PDF:", error);
+                alert("Ocorreu um erro ao tentar gerar o PDF. Verifique o console para mais detalhes.");
+            });
         }
     
         // Inicialização
