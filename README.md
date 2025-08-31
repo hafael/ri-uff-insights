@@ -18,8 +18,7 @@ Acesse a versão interativa do dashboard, hospedada no GitHub Pages:
 ---
 
 *Substitua a URL da imagem abaixo pela URL de uma captura de tela do seu dashboard.*
-![Screenshot do Dashboard](https://imgur.com/BlWSCt6)
-
+![Screenshot do Dashboard](https://i.imgur.com/BlWSCt6.png)
 
 ## ✨ Funcionalidades
 
