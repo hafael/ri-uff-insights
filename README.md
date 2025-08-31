@@ -9,7 +9,7 @@ Este projeto transforma um conjunto de dados extraído do Repositório Instituci
 
 ---
 
-## 🚀 Demo Online
+## 🚀 Acesse Online
 
 Acesse a versão interativa do dashboard, hospedada no GitHub Pages:
 
@@ -18,7 +18,7 @@ Acesse a versão interativa do dashboard, hospedada no GitHub Pages:
 ---
 
 *Substitua a URL da imagem abaixo pela URL de uma captura de tela do seu dashboard.*
-![Screenshot do Dashboard](https://i.imgur.com/7gK2R3x.png)
+![Screenshot do Dashboard](https://imgur.com/BlWSCt6)
 
 
 ## ✨ Funcionalidades
@@ -65,6 +65,7 @@ Este projeto foi desenvolvido e é mantido com o auxílio das seguintes ferramen
 
 * **Vibe codado com:** Gemini, Amazon Q e Visual Studio Code
 * **Hospedagem:** GitHub Pages
+* **Coleta de dados:** Apify
 
 ## 💻 Como Executar Localmente
 
