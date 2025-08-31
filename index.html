@@ -12,6 +12,96 @@
     <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
     <link href="https://unpkg.com/vis-network/styles/vis-network.min.css" rel="stylesheet" type="text/css" />
     <style>
+        .accordion-button {
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+            transition: background-color 0.2s ease;
+        }
+        .accordion-button:hover {
+            background-color: #f9fafb; /* um cinza bem claro no hover */
+        }
+        .accordion-button .accordion-icon {
+            transition: transform 0.3s ease;
+        }
+        .accordion-button.active .accordion-icon {
+            transform: rotate(180deg);
+        }
+        .accordion-panel {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+            background-color: #ffffff; /* Fundo branco para o conteúdo */
+        }
+
+        #btn-voltar-topo {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: none; /* Começa escondido */
+            transition: opacity 0.3s, visibility 0.3s;
+            z-index: 100;
+        }
+    </style>
+    <style>
+        @media screen and (max-width: 768px) {
+            .responsive-table table, 
+            .responsive-table thead, 
+            .responsive-table tbody, 
+            .responsive-table th, 
+            .responsive-table td, 
+            .responsive-table tr {
+                display: block;
+            }
+
+            /* Esconde o cabeçalho original da tabela em telas pequenas */
+            .responsive-table thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+
+            /* Transforma cada linha em um card */
+            .responsive-table tr {
+                border: 1px solid #e5e7eb;
+                border-radius: 0.5rem;
+                margin-bottom: 1rem;
+                box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            }
+
+            .responsive-table td {
+                /* Comporta-se como uma "linha" dentro do card */
+                border: none;
+                border-bottom: 1px solid #f3f4f6;
+                position: relative;
+                padding-left: 50%; /* Espaço para o rótulo */
+                text-align: right;
+                padding-top: 0.75rem;
+                padding-bottom: 0.75rem;
+            }
+
+            .responsive-table td:before {
+                /* Cria o rótulo da coluna (ex: "TCCs:", "Teses:") */
+                position: absolute;
+                top: 50%;
+                left: 1.5rem; /* Alinhamento do rótulo */
+                transform: translateY(-50%);
+                width: 45%;
+                padding-right: 10px;
+                white-space: nowrap;
+                text-align: left;
+                font-weight: 600;
+                color: #1f2937; /* Cor do texto do rótulo */
+                content: attr(data-label); /* Pega o texto do atributo data-label */
+            }
+
+            /* Remove borda da última célula do card */
+            .responsive-table td:last-child {
+                border-bottom: 0;
+            }
+        }
+    </style>
+    <style>
         
         /* Estilos para visualização em tela */
         @media screen {
@@ -186,28 +276,25 @@
             <p class="text-sm text-gray-500 mt-2">Por favor, aguarde.</p>
         </div>
     </div>
+    <button id="btn-voltar-topo" class="bg-blue-600 text-white rounded-full p-3 shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
+        </svg>
+    </button>
     <div class="container mx-auto px-4 py-8">
         <!-- Cabeçalho -->
-        <header class="text-center mb-12">
+        <header class="text-center mb-6 flex flex-col items-center">
             <h1 class="text-4xl font-bold mb-2">Repositório Institucional da Universidade Federal Fluminense</h1>
             <h2 class="text-2xl text-blue-700">Insights sobre trabalhos acadêmicos publicados no programa de graduação em Biblioteconomia e Documentação e pós-graduação Ciência da Informação da UFF</h2>
             <p class="mt-4 text-gray-600">Relatório gerado em <span id="current-date"></span></p>
-            <p class="mt-1 text-gray-600">Dataset obtido em <span id="dataset-date"></span></p>
+            <p class="mt-1 mb-3 text-gray-600">Dataset obtido em <span id="dataset-date"></span></p>
+            <!-- <button id="btn-export-pdf" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Exportar PDF
+            </button> -->
         </header>
-
-        <!-- Sumário Horizontal -->
-        <!-- <section class="mb-12 no-print">
-            <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Sumário</h2>
-            <div class="flex flex-wrap justify-center gap-4">
-                <a href="#dados-gerais" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">Dados Gerais</a>
-                <a href="#trabalhos" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">Lista de Trabalhos</a>
-                <a href="#indice-orientadores" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">Índice de Orientadores</a>
-                <a href="#indice-autores" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">Índice de Autores</a>
-                <a href="#evolucao-academica" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">Evolução Acadêmica</a>
-                <a href="#mapa-tematico" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">Mapa Temático</a>
-                <a href="#nuvem-palavras" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">Nuvem de Palavras</a>
-            </div>
-        </section> -->
 
         <section class="mb-12 no-print">
             <h2 class="text-2xl font-semibold mb-6 border-b pb-3 text-blue-800">Sumário</h2>
@@ -309,16 +396,16 @@
         </section>
 
         <!-- Dados Gerais -->
-        <section id="dados-gerais" class="mb-12 print-break">
-            <div class="flex justify-between items-center content-center mb-4 border-b pb-2">
-                <h2 class="text-2xl font-semibold">Dados Gerais</h2>
+        <section id="dados-gerais" class="mb-4 print-break">
+            <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Dados Gerais</h2>
+            <div class="flex justify-between items-center mb-4">
                 <div class="flex gap-2 no-print">
-                    <button id="btn-export-pdf" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 flex items-center">
+                    <!-- <button id="btn-export-pdf" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                         Exportar PDF
-                    </button>
+                    </button> -->
                     <!-- <button onclick="window.print()" class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m4 4h6a2 2 0 002-2v-4a2 2 0 00-2-2h-6a2 2 0 00-2 2v4a2 2 0 002 2z" />
@@ -328,7 +415,7 @@
                 </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+                <div class="bg-white p-6 rounded-lg shadow-lg text-center flex flex-col items-center justify-center">
                     <div class="bg-blue-100 p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
@@ -337,15 +424,17 @@
                     <h3 class="text-lg font-medium text-blue-700 mb-2">Total de Trabalhos</h3>
                     <p class="text-4xl font-bold text-gray-800" id="total-trabalhos">0</p>
                 </div>
-                <div class="bg-white p-6 rounded-lg shadow-lg">
+                <div class="bg-white p-6 rounded-lg shadow-lg flex flex-col items-center justify-center">
                     <h3 class="text-lg font-medium text-blue-700 mb-4 text-center">Distribuição por Tipo</h3>
                     <ul id="tipo-trabalhos" class="space-y-3">
                         <!-- Será preenchido via JavaScript -->
                     </ul>
                 </div>
-                <div class="bg-white p-6 rounded-lg shadow-lg">
+                <div class="bg-white p-6 rounded-lg shadow-lg flex flex-col items-center justify-center">
                     <h3 class="text-lg font-medium text-blue-700 mb-4 text-center">Distribuição Temporal</h3>
-                    <canvas id="grafico-temporal" height="200"></canvas>
+                    <div class="relative bg-white p-4 rounded-lg border h-[250px]">
+                        <canvas id="grafico-temporal"></canvas>
+                    </div>
                 </div>
             </div>
         </section>
@@ -387,13 +476,17 @@
                     <button id="btn-aplicar-filtros" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Aplicar Filtros</button>
                     <button id="btn-limpar-filtros" class="ml-2 bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">Limpar Filtros</button>
                 </div>
+                <div id="filtros-ativos-container" class="mt-4 pt-4 border-t border-gray-200">
+                </div>
             </div>
         </section>
 
-        <!-- Lista de Trabalhos -->
+
+        <!-- Lista de Trabalhos Publicados -->
         <section id="trabalhos" class="mb-12 print-break">
             <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Lista de Trabalhos</h2>
-            <div id="lista-trabalhos" class="space-y-6">
+            <div id="info-trabalhos" class="mb-4 text-sm text-gray-600"></div>
+            <div id="lista-trabalhos" class="space-y-6 relative">
                 <!-- Trabalhos serão carregados aqui via JavaScript -->
             </div>
             
@@ -406,7 +499,7 @@
         <!-- Índice de Orientadores -->
         <section id="indice-orientadores" class="mb-12 print-break">
             <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Índice de Orientadores</h2>
-            <div id="tabela-orientadores" class="bg-white rounded-lg shadow overflow-hidden">
+            <div id="tabela-orientadores" class="responsive-table bg-white rounded-lg shadow overflow-hidden">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
@@ -422,12 +515,13 @@
                     </tbody>
                 </table>
             </div>
+            <div id="orientadores-ver-mais-container" class="text-center mt-4 no-print"></div>
         </section>
 
         <!-- Índice de Autores -->
         <section id="indice-autores" class="mb-12 print-break">
             <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Índice de Autores</h2>
-            <div id="tabela-autores" class="bg-white rounded-lg shadow overflow-hidden">
+            <div id="tabela-autores" class="responsive-table bg-white rounded-lg shadow overflow-hidden">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
@@ -443,6 +537,7 @@
                     </tbody>
                 </table>
             </div>
+            <div id="autores-ver-mais-container" class="text-center mt-4 no-print"></div>
         </section>
 
         <!-- Evolução Acadêmica -->
@@ -452,6 +547,72 @@
                 <p class="mb-4">Esta seção mostra autores que progrediram em sua carreira acadêmica, apresentando trabalhos em diferentes níveis (TCC → Dissertação → Tese).</p>
                 <div id="lista-evolucao" class="space-y-4">
                     <!-- Conteúdo será preenchido via JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <section id="mapa-tematico" class="mb-12 print-break">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-3 text-blue-800">Mapa Temático da Produção Acadêmica</h2>
+            <div class="mb-4 p-4 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800" role="alert">
+                <span class="font-bold">Legenda:</span> O ícone 🚩 indica um dos 10 temas ou assuntos com maior número de trabalhos acadêmicos associados no repositório.
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100 space-y-8">
+                
+                <div>
+                    <h3 class="text-xl font-semibold mb-4 text-gray-700">Visão Geral dos Temas</h3>
+                    <div id="tabela-mapa-tematico" class="responsive-table overflow-hidden border rounded-lg">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tema Principal (Descritor)</th>
+                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">TCCs</th>
+                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Dissertações</th>
+                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Teses</th>
+                                </tr>
+                            </thead>
+                            <tbody id="corpo-tabela-temas" class="bg-white divide-y divide-gray-200">
+                                </tbody>
+                        </table>
+                    </div>
+                    <div id="temas-ver-mais-container" class="text-center mt-4 no-print"></div>
+                </div>
+
+                <div class="border-t pt-8">
+                    <h3 class="text-xl font-semibold mb-4 text-gray-700">Explore um Tema</h3>
+                    <div class="mb-6">
+                        <label for="filtro-mapa-tema" class="block text-sm font-medium text-gray-700 mb-2">Selecione uma área temática para ver detalhes sobre autores, orientadores e assuntos relacionados:</label>
+                        <select id="filtro-mapa-tema" class="w-full md:w-2/3 p-2 border rounded-md focus:border-blue-500 focus:ring focus:ring-blue-200 transition">
+                            <option value="">-- Selecione um tema --</option>
+                            </select>
+                    </div>
+                    
+                    <div id="detalhes-tema-container" class="hidden transition-opacity duration-300 bg-gray-50 p-6 rounded-lg border">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            
+                            <div class="lg:col-span-1">
+                                <h4 class="text-lg font-semibold text-gray-800 mb-3 border-b pb-2">Assuntos Relacionados</h4>
+                                <ul id="lista-assuntos-tema" class="space-y-1 text-sm text-gray-700 max-h-60 overflow-y-auto pr-2">
+                                    </ul>
+                            </div>
+                            
+                            <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div>
+                                    <h4 class="text-lg font-semibold text-gray-800 mb-3 border-b pb-2">Autores</h4>
+                                    <ul id="lista-autores-tema" class="space-y-1 text-sm text-gray-700 max-h-60 overflow-y-auto pr-2">
+                                        </ul>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg font-semibold text-gray-800 mb-3 border-b pb-2">Orientadores</h4>
+                                    <ul id="lista-orientadores-tema" class="space-y-1 text-sm text-gray-700 max-h-60 overflow-y-auto pr-2">
+                                        </ul>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div id="prompt-tema" class="text-center text-gray-500 mt-4">
+                        <p>Selecione um tema na lista acima para visualizar os detalhes.</p>
+                    </div>
                 </div>
             </div>
         </section>
@@ -499,20 +660,28 @@
             </div>
         </section>
 
-        <section id="rede-colaboracao-secao" class="mb-12 print-break">
-            <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Análise de Redes de Colaboração</h2>
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow">
-                    <p class="text-sm text-gray-600 mb-4">
-                        Este grafo interativo visualiza as conexões entre orientadores, autores e membros de banca. O tamanho de cada nó representa sua centralidade (número de conexões). Passe o mouse sobre um nó para destacar suas conexões.
-                    </p>
-                    <div id="rede-colaboracao-container" class="border rounded-lg" style="height: 600px; width: 100%;">
+        <!-- Redes de Colaboração -->
+        <section id="rede-colaboracao-secao" class="mb-4 bg-white rounded-lg shadow overflow-hidden">
+            <h2 class="accordion-button flex justify-between items-center p-4 lg:p-6 text-2xl font-semibold border-b">
+                <span>Análise de Redes de Colaboração</span>
+                <svg class="accordion-icon h-6 w-6 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+            </h2>
+            <div class="accordion-panel">
+                <div class="p-4 lg:p-6 border-t">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2">
+                            <p class="text-sm text-gray-600 mb-4">
+                                Este grafo interativo visualiza as conexões entre orientadores, autores e membros de banca. O tamanho de cada nó representa sua centralidade (número de conexões). Passe o mouse sobre um nó para destacar suas conexões.
+                            </p>
+                            <div id="rede-colaboracao-container" class="border rounded-lg" style="height: 600px; width: 100%;">
+                                </div>
                         </div>
-                </div>
-                <div class="lg:col-span-1 bg-white p-6 rounded-lg shadow">
-                    <h3 class="text-lg font-medium text-blue-700 mb-4">Métricas Principais da Rede</h3>
-                    <div id="metricas-rede" class="space-y-4">
+                        <div class="lg:col-span-1">
+                            <h3 class="text-lg font-medium text-blue-700 mb-4">Métricas Principais da Rede</h3>
+                            <div id="metricas-rede" class="space-y-4">
+                                </div>
                         </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -612,6 +781,8 @@
         let filteredTrabalhos = [];
         let temasPorAno = new Map();
         let graficoEvolucaoTema = null;
+        let graficoTemporalInstance = null;
+        let temasMap = new Map();
 
         // --- FUNÇÃO PRINCIPAL DE CARREGAMENTO E INICIALIZAÇÃO ---
         async function iniciarAplicacao() {
@@ -646,22 +817,17 @@
                 // Processar dados
                 processarDados();
                 processarDadosTemas();
-
-                // Renderizar componentes
-                renderizarDadosGerais();
                 preencherFiltros();
-                renderizarTrabalhos();
-                renderizarPaginacao();
-                renderizarIndiceOrientadores();
-                renderizarIndiceAutores();
-                renderizarEvolucaoAcademica();
-                gerarNuvemPalavras();
-                renderizarRedeColaboracao();
-                renderizarEvolucaoTemas();
-                renderizarJornadaAutor();
+                processarDadosMapaTematico();
+                
+                // Renderizar componentes
 
                 // Adicionar Event Listeners
                 configurarEventListeners();
+                // Configura os acordions
+                abrirTodosAccordions();
+                // Primeira renderização com todos os dados
+                atualizarDashboard(trabalhosProcessados);
 
                 // 3. ESCONDE O INDICADOR DE CARREGAMENTO E MOSTRA O CONTEÚDO
                 loadingIndicator.style.display = 'none';
@@ -679,6 +845,75 @@
             }
         }
 
+        /**
+         * Função central que recalcula e renderiza todos os componentes do dashboard
+         * com base em um determinado conjunto de dados (filtrado ou completo).
+         */
+         function atualizarDashboard(trabalhos) {
+            // Limpa os mapas de contagem para recalcular
+            orientadoresMap.clear();
+            autoresMap.clear();
+            palavrasChaveMap.clear();
+            temasPorAno.clear();
+
+            // Recalcula os mapas e contagens com base nos dados fornecidos
+            trabalhos.forEach(trabalho => {
+                // Contagem de palavras-chave para a nuvem
+                trabalho.todasPalavrasChave.forEach(palavra => {
+                    const count = palavrasChaveMap.get(palavra) || 0;
+                    palavrasChaveMap.set(palavra, count + 1);
+                });
+
+                // Contagem para o índice de orientadores
+                if (trabalho.orientadorNormalizado) {
+                    if (!orientadoresMap.has(trabalho.orientadorNormalizado)) {
+                        orientadoresMap.set(trabalho.orientadorNormalizado, { tcc: 0, dissertacao: 0, tese: 0, bancas: new Set() });
+                    }
+                    const orientador = orientadoresMap.get(trabalho.orientadorNormalizado);
+                    if (trabalho.tipo === 'TCC') orientador.tcc++;
+                    else if (trabalho.tipo === 'Dissertação') orientador.dissertacao++;
+                    else if (trabalho.tipo === 'Tese') orientador.tese++;
+                }
+
+                // Contagem para o índice de autores
+                if (trabalho.autorNormalizado) {
+                     if (!autoresMap.has(trabalho.autorNormalizado)) {
+                        autoresMap.set(trabalho.autorNormalizado, { tcc: 0, dissertacao: 0, tese: 0 });
+                    }
+                    const autor = autoresMap.get(trabalho.autorNormalizado);
+                    if (trabalho.tipo === 'TCC') autor.tcc++;
+                    else if (trabalho.tipo === 'Dissertação') autor.dissertacao++;
+                    else if (trabalho.tipo === 'Tese') autor.tese++;
+                }
+
+                // Contagem para a evolução temática
+                const ano = trabalho.ano;
+                if (ano !== 'Não informado') {
+                    trabalho.todasPalavrasChave.forEach(palavra => {
+                        if (!temasPorAno.has(palavra)) temasPorAno.set(palavra, new Map());
+                        const mapaAnos = temasPorAno.get(palavra);
+                        const contagemAtual = mapaAnos.get(ano) || 0;
+                        mapaAnos.set(ano, contagemAtual + 1);
+                    });
+                }
+            });
+
+            // Re-renderiza todos os componentes do dashboard
+            renderizarDadosGerais(trabalhos); // Passa os trabalhos para os totais
+            renderizarTrabalhos(); // Já usa a variável global 'filteredTrabalhos'
+            renderizarPaginacao();
+            renderizarIndiceOrientadores();
+            renderizarIndiceAutores();
+            renderizarEvolucaoAcademica();
+            gerarNuvemPalavras();
+            renderizarRedeColaboracao(trabalhos); // Passa os trabalhos para a rede
+            renderizarEvolucaoTemas();
+            renderizarJornadaAutor(); // Já usa o 'autoresMap' recalculado
+            renderizarFiltrosAtivos(); // Renderiza os chips de filtros
+            renderizarMapaTematicoTabela();
+            popularFiltroMapaTematico();
+        }
+
         // --- FUNÇÃO PARA CONFIGURAR OS EVENT LISTENERS ---
         function configurarEventListeners() {
             const btnExportPdf = document.getElementById('btn-export-pdf');
@@ -694,8 +929,57 @@
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape') fecharModal();
             });
+
+            // Lógica para o Accordion
+            const accordions = document.querySelectorAll('.accordion-button');
+            accordions.forEach(button => {
+                button.addEventListener('click', () => {
+
+                    // Abrir/Fechar o accordion clicado
+                    button.classList.toggle('active');
+                    const panel = button.nextElementSibling;
+                    if (panel.style.maxHeight) {
+                        panel.style.maxHeight = null;
+                    } else {
+                        panel.style.maxHeight = panel.scrollHeight + "px";
+                    }
+                });
+            });
+
+            // Lógica para o botão Voltar ao Topo
+            const btnVoltarTopo = document.getElementById('btn-voltar-topo');
+            window.addEventListener('scroll', () => {
+                if (window.pageYOffset > 300) { // Mostra o botão depois de rolar 300px
+                    btnVoltarTopo.style.display = 'block';
+                } else {
+                    btnVoltarTopo.style.display = 'none';
+                }
+            });
+            btnVoltarTopo.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+            
+            // Mapa temático
+            document.getElementById('filtro-mapa-tema').addEventListener('change', (e) => {
+                exibirDetalhesTema(e.target.value);
+            });
         }
     
+        /**
+         * Percorre todos os accordions e os coloca no estado "aberto" por padrão.
+         */
+         function abrirTodosAccordions() {
+            const accordions = document.querySelectorAll('.accordion-button');
+            accordions.forEach(button => {
+                button.classList.add('active'); // Adiciona a classe para girar o ícone
+                const panel = button.nextElementSibling;
+                if (panel) {
+                    // Define a altura máxima do painel para a sua altura total de conteúdo
+                    panel.style.maxHeight = panel.scrollHeight + "px";
+                }
+            });
+        }
+
         // Normalização de nomes
         /**
          * Normaliza um nome aplicando um mapa de correções estáticas e regras de limpeza.
@@ -854,170 +1138,168 @@
             const anoMatch = dateString.match(/\b(19|20)\d{2}\b/);
             return anoMatch ? anoMatch[0] : 'Não informado';
         }
-    
-        // Processar dados
+
+        // MODIFICADA: Apenas processa os dados brutos uma vez
         function processarDados() {
             trabalhosProcessados = data.map(trabalho => {
-                // Normalizar nomes
                 const autorNormalizado = normalizarNome(trabalho.author);
                 const orientadorNormalizado = normalizarNome(trabalho.advisor);
                 const bancaNormalizada = trabalho.board_members ? trabalho.board_members.map(normalizarNome) : [];
-                
-                // Extrair ano
                 const ano = extrairAno(trabalho.date_issued || trabalho.date_available);
                 
-                // Determinar tipo de trabalho
                 let tipo = 'Outro';
-                if (trabalho.collection_name.includes('TCC') || trabalho.degree_level.includes('graduação')) {
+                if (trabalho.collection_name.includes('TCC') || (trabalho.degree_level && trabalho.degree_level.includes('graduação'))) {
                     tipo = 'TCC';
-                } else if (trabalho.collection_name.includes('Disserta') || trabalho.degree_level.includes('Mestrado')) {
+                } else if (trabalho.collection_name.includes('Disserta') || (trabalho.degree_level && trabalho.degree_level.includes('Mestrado'))) {
                     tipo = 'Dissertação';
-                } else if (trabalho.collection_name.includes('Tese') || trabalho.degree_level.includes('Doutorado')) {
+                } else if (trabalho.collection_name.includes('Tese') || (trabalho.degree_level && trabalho.degree_level.includes('Doutorado'))) {
                     tipo = 'Tese';
                 }
                 
-                // Coletar todas as palavras-chave
                 const todasPalavrasChave = [
                     ...(trabalho.keywords || []),
                     ...(trabalho.descriptors || []),
                     ...(trabalho.additional_keywords || [])
                 ];
-                
-                // Atualizar contagem de palavras-chave
-                todasPalavrasChave.forEach(palavra => {
-                    const count = palavrasChaveMap.get(palavra) || 0;
-                    palavrasChaveMap.set(palavra, count + 1);
-                });
-                
-                // Adicionar áreas temáticas, anos e orientadores aos sets
+
+                // Popula os sets para os filtros (isso só precisa ser feito uma vez)
                 if (trabalho.descriptors && trabalho.descriptors.length > 0) {
                     trabalho.descriptors.forEach(area => areasTematicas.add(area));
                 }
-                anos.add(ano);
+                if (ano !== 'Não informado') anos.add(ano);
                 if (orientadorNormalizado) orientadoresSet.add(orientadorNormalizado);
                 
                 return {
-                    ...trabalho,
-                    autorNormalizado,
-                    orientadorNormalizado,
-                    bancaNormalizada,
-                    ano,
-                    tipo,
-                    todasPalavrasChave
+                    ...trabalho, autorNormalizado, orientadorNormalizado, bancaNormalizada, ano, tipo, todasPalavrasChave
                 };
             });
             
-            // Ordenar trabalhos por ano (mais recente primeiro)
             trabalhosProcessados.sort((a, b) => {
-                if (a.ano === 'Não informado') return 1;
-                if (b.ano === 'Não informado') return -1;
+                if (a.ano === 'Não informado') return 1; if (b.ano === 'Não informado') return -1;
                 return parseInt(b.ano) - parseInt(a.ano);
             });
-            
-            // Processar orientadores
-            trabalhosProcessados.forEach(trabalho => {
-                if (trabalho.orientadorNormalizado) {
-                    if (!orientadoresMap.has(trabalho.orientadorNormalizado)) {
-                        orientadoresMap.set(trabalho.orientadorNormalizado, {
-                            tcc: 0,
-                            dissertacao: 0,
-                            tese: 0,
-                            bancas: new Set()
-                        });
-                    }
-                    
-                    const orientador = orientadoresMap.get(trabalho.orientadorNormalizado);
-                    if (trabalho.tipo === 'TCC') orientador.tcc++;
-                    else if (trabalho.tipo === 'Dissertação') orientador.dissertacao++;
-                    else if (trabalho.tipo === 'Tese') orientador.tese++;
-                    
-                    // Adicionar participações em bancas
-                    if (trabalho.bancaNormalizada && trabalho.bancaNormalizada.length > 0) {
-                        trabalho.bancaNormalizada.forEach(membro => {
-                            if (membro !== trabalho.orientadorNormalizado) {
-                                orientador.bancas.add(membro);
-                            }
-                        });
-                    }
-                }
-                
-                // Processar autores
-                if (!autoresMap.has(trabalho.autorNormalizado)) {
-                    autoresMap.set(trabalho.autorNormalizado, {
-                        tcc: 0,
-                        dissertacao: 0,
-                        tese: 0
-                    });
-                }
-                
-                const autor = autoresMap.get(trabalho.autorNormalizado);
-                if (trabalho.tipo === 'TCC') autor.tcc++;
-                else if (trabalho.tipo === 'Dissertação') autor.dissertacao++;
-                else if (trabalho.tipo === 'Tese') autor.tese++;
-            });
-            
+
             filteredTrabalhos = [...trabalhosProcessados];
 
             renderizarNormalizacaoNomes();
         }
     
         // Renderizar dados gerais
-        function renderizarDadosGerais() {
-            // Total de trabalhos
-            document.getElementById('total-trabalhos').textContent = trabalhosProcessados.length;
+        // MODIFICADA E CORRIGIDA: Gráfico temporal agora é reativo e não causa erro.
+        function renderizarDadosGerais(trabalhos) {
+            // --- Parte 1: Renderiza os totais (sem alterações) ---
+            document.getElementById('total-trabalhos').textContent = trabalhos.length;
             
-            // Por tipo
-            const tipoCount = {
-                'TCC': 0,
-                'Dissertação': 0,
-                'Tese': 0,
-                'Outro': 0
-            };
-            
-            trabalhosProcessados.forEach(trabalho => {
-                tipoCount[trabalho.tipo]++;
-            });
+            const tipoCount = { 'TCC': 0, 'Dissertação': 0, 'Tese': 0, 'Outro': 0 };
+            trabalhos.forEach(trabalho => { tipoCount[trabalho.tipo]++; });
             
             const tipoTrabalhosEl = document.getElementById('tipo-trabalhos');
             tipoTrabalhosEl.innerHTML = '';
             for (const [tipo, count] of Object.entries(tipoCount)) {
                 if (count > 0) {
                     const li = document.createElement('li');
-                    li.textContent = `${tipo}: ${count}`;
+                    li.className = 'flex justify-between items-center text-sm';
+                    li.innerHTML = `<span>${tipo}:</span> <span class="font-bold text-lg">${count}</span>`;
                     tipoTrabalhosEl.appendChild(li);
                 }
             }
-            
-            // Gráfico temporal
-            const anosArray = Array.from(anos).filter(ano => ano !== 'Não informado').sort();
-            const countsPorAno = anosArray.map(ano => {
-                return trabalhosProcessados.filter(t => t.ano === ano).length;
-            });
-            
+
+            // --- Parte 2: Lógica do Gráfico Temporal (Corrigida e Reativa) ---
+
+            // 1. Destroi a instância anterior do gráfico, se ela existir.
+            if (graficoTemporalInstance) {
+                graficoTemporalInstance.destroy();
+            }
+
+            // 2. Agrupa e conta os trabalhos por ano a partir dos dados (filtrados ou não)
+            const countsPorAno = trabalhos.reduce((acc, trabalho) => {
+                if (trabalho.ano !== 'Não informado') {
+                    acc[trabalho.ano] = (acc[trabalho.ano] || 0) + 1;
+                }
+                return acc;
+            }, {});
+
+            // 3. Prepara os dados para o Chart.js
+            const anosLabels = Object.keys(countsPorAno).sort();
+            const dadosContagem = anosLabels.map(ano => countsPorAno[ano]);
+
+            // 4. Cria a nova instância do gráfico
             const ctx = document.getElementById('grafico-temporal').getContext('2d');
-            new Chart(ctx, {
+            graficoTemporalInstance = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: anosArray,
+                    labels: anosLabels,
                     datasets: [{
-                        label: 'Trabalhos por ano',
-                        data: countsPorAno,
-                        backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
+                        label: 'Trabalhos por Ano',
+                        data: dadosContagem,
+                        backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                        borderColor: 'rgba(59, 130, 246, 1)',
                         borderWidth: 1
                     }]
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: false } // O título já está na seção
+                    },
                     scales: {
                         y: {
                             beginAtZero: true,
-                            ticks: {
-                                stepSize: 1
-                            }
+                            ticks: { stepSize: 1 }
                         }
                     }
                 }
+            });
+        }
+
+        /**
+         * Mostra visualmente quais filtros estão ativos.
+         */
+        function renderizarFiltrosAtivos() {
+            const container = document.getElementById('filtros-ativos-container');
+            container.innerHTML = '';
+            
+            const filtros = {
+                'Área': document.getElementById('filtro-area').value,
+                'Ano': document.getElementById('filtro-ano').value,
+                'Orientador': document.getElementById('filtro-orientador').value,
+                'Tipo': document.getElementById('filtro-tipo').value
+            };
+
+            const temFiltros = Object.values(filtros).some(v => v !== '');
+
+            if (!temFiltros) {
+                container.style.display = 'none';
+                return;
+            }
+
+            container.style.display = 'block';
+            let chipsHTML = '<div class="flex flex-wrap items-center gap-2"><span class="text-sm font-medium text-gray-600">Filtros Ativos:</span>';
+
+            for (const [key, value] of Object.entries(filtros)) {
+                if (value) {
+                    chipsHTML += `
+                        <span class="inline-flex items-center bg-blue-100 text-blue-800 text-sm font-semibold pl-3 pr-1 py-1 rounded-full">
+                            ${key}: ${value}
+                            <button class="ml-2 flex-shrink-0 bg-blue-200 hover:bg-blue-300 rounded-full h-5 w-5 flex items-center justify-center" data-filtro-id="filtro-${key.toLowerCase()}">
+                                &times;
+                            </button>
+                        </span>
+                    `;
+                }
+            }
+            chipsHTML += `</div>`;
+            container.innerHTML = chipsHTML;
+
+            // Adiciona event listeners para os botões de remover chip
+            container.querySelectorAll('button').forEach(button => {
+                button.addEventListener('click', () => {
+                    const filtroId = button.dataset.filtroId;
+                    document.getElementById(filtroId).value = '';
+                    aplicarFiltros();
+                });
             });
         }
     
@@ -1056,72 +1338,61 @@
         }
     
         // Aplicar filtros
+        // MODIFICADA: Agora apenas aplica o filtro e chama a atualização
         function aplicarFiltros() {
             const area = document.getElementById('filtro-area').value;
             const ano = document.getElementById('filtro-ano').value;
             const orientador = document.getElementById('filtro-orientador').value;
-            const tipo = document.getElementById('filtro-tipo').value; // <-- Nova linha
+            const tipo = document.getElementById('filtro-tipo').value;
 
             filteredTrabalhos = trabalhosProcessados.filter(trabalho => {
-                let passaFiltro = true;
-                
-                if (area && (!trabalho.descriptors || !trabalho.descriptors.includes(area))) {
-                    passaFiltro = false;
-                }
-                
-                if (ano && trabalho.ano !== ano) {
-                    passaFiltro = false;
-                }
-                
-                if (orientador && trabalho.orientadorNormalizado !== orientador) {
-                    passaFiltro = false;
-                }
-
-                // <-- Nova lógica de filtro
-                if (tipo && trabalho.tipo !== tipo) {
-                    passaFiltro = false;
-                }
-                
-                return passaFiltro;
+                return (!area || (trabalho.descriptors && trabalho.descriptors.includes(area))) &&
+                       (!ano || trabalho.ano === ano) &&
+                       (!orientador || trabalho.orientadorNormalizado === orientador) &&
+                       (!tipo || trabalho.tipo === tipo);
             });
             
-            currentPage = 1;
-            renderizarTrabalhos();
-            renderizarPaginacao();
+            currentPage = 1; // Reseta a paginação
+            atualizarDashboard(filteredTrabalhos); // Chama a função mestra
         }
     
         // Limpar filtros
+        // MODIFICADA: Limpa os filtros e chama a atualização com os dados completos
         function limparFiltros() {
             document.getElementById('filtro-area').value = '';
             document.getElementById('filtro-ano').value = '';
             document.getElementById('filtro-orientador').value = '';
-            document.getElementById('filtro-tipo').value = ''; // <-- Nova linha
+            document.getElementById('filtro-tipo').value = '';
             
             filteredTrabalhos = [...trabalhosProcessados];
             currentPage = 1;
-            renderizarTrabalhos();
-            renderizarPaginacao();
+            atualizarDashboard(trabalhosProcessados); // Chama a função mestra
         }
     
         // Renderizar trabalhos (VERSÃO MELHORADA)
         function renderizarTrabalhos() {
             const listaTrabalhos = document.getElementById('lista-trabalhos');
+            const infoTrabalhosEl = document.getElementById('info-trabalhos'); // Pega o novo container
+            
+            // Limpa o conteúdo anterior
             listaTrabalhos.innerHTML = '';
+            infoTrabalhosEl.innerHTML = '';
 
+            const totalTrabalhos = filteredTrabalhos.length;
             const startIndex = (currentPage - 1) * itemsPerPage;
-            const endIndex = Math.min(startIndex + itemsPerPage, filteredTrabalhos.length);
+            const endIndex = Math.min(startIndex + itemsPerPage, totalTrabalhos);
 
-            if (startIndex >= endIndex) {
+            // Se não houver trabalhos, exibe a mensagem e encerra a função
+            if (totalTrabalhos === 0) {
                 listaTrabalhos.innerHTML = `<p class="text-center text-gray-500 col-span-full">Nenhum trabalho encontrado para os filtros selecionados.</p>`;
-                // Se a lista de trabalhos for uma grid, ajuste o estilo do parágrafo.
-                // Se for um container flex ou de bloco, o estilo acima já funciona.
-                // Para uma grid, você pode querer adicionar classes como 'md:col-span-2 lg:col-span-4' ao <p>
                 return;
             }
             
+            // Adiciona a informação de contagem e intervalo
+            infoTrabalhosEl.textContent = `Exibindo de ${startIndex + 1} a ${endIndex} de um total de ${totalTrabalhos} trabalhos encontrados.`;
+            
             // Altera o container para renderizar em formato de grid responsiva
             listaTrabalhos.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-6';
-
 
             for (let i = startIndex; i < endIndex; i++) {
                 const trabalho = filteredTrabalhos[i];
@@ -1146,7 +1417,6 @@
                     tipoLabel = 'Outro';
                     tipoCor = 'bg-gray-100 text-gray-800';
                 }
-
 
                 trabalhoEl.innerHTML = `
                     <div>
@@ -1334,65 +1604,89 @@
             document.getElementById('modal-trabalho').classList.add('hidden');
         }
     
-        // Renderizar índice de orientadores
-        function renderizarIndiceOrientadores() {
-            const corpoTabela = document.getElementById('corpo-tabela-orientadores');
-            corpoTabela.innerHTML = '';
-            
-            // Converter Map para array e ordenar alfabeticamente
-            const orientadoresArray = Array.from(orientadoresMap.entries())
-                .sort((a, b) => a[0].localeCompare(b[0]));
-            
-            orientadoresArray.forEach(([nome, dados]) => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap font-medium">${nome}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">${dados.tcc}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">${dados.dissertacao}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">${dados.tese}</td>
-                    <td class="px-6 py-4">${dados.bancas.size}</td>
-                `;
-                corpoTabela.appendChild(row);
-            });
+        /**
+         * Gerencia a exibição de tabelas com a funcionalidade "ver mais".
+         * Limita a exibição inicial e adiciona um botão para mostrar todos os itens.
+         * @param {HTMLElement} corpoTabelaEl - O elemento tbody da tabela.
+         * @param {Array} dadosCompletos - O array completo de dados a ser exibido.
+         * @param {HTMLElement} containerBotaoEl - O container onde o botão "ver mais" será inserido.
+         * @param {Function} renderizarLinhaFn - A função que sabe como renderizar uma única linha da tabela.
+         * @param {string} nomeItem - O nome do item para usar no texto do botão (ex: "orientador").
+         */
+        function gerenciarPaginacaoTabela(corpoTabelaEl, dadosCompletos, containerBotaoEl, renderizarLinhaFn, nomeItem) {
+            const LIMITE_ITENS = 16;
+            corpoTabelaEl.innerHTML = '';
+            containerBotaoEl.innerHTML = '';
+
+            const itensParaExibir = dadosCompletos.slice(0, LIMITE_ITENS);
+            itensParaExibir.forEach(item => corpoTabelaEl.appendChild(renderizarLinhaFn(item)));
+
+            if (dadosCompletos.length > LIMITE_ITENS) {
+                const btn = document.createElement('button');
+                btn.className = 'bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors';
+                btn.textContent = `Ver todos os ${dadosCompletos.length} ${nomeItem}`;
+                containerBotaoEl.appendChild(btn);
+
+                btn.addEventListener('click', () => {
+                    corpoTabelaEl.innerHTML = ''; // Limpa as linhas iniciais
+                    dadosCompletos.forEach(item => corpoTabelaEl.appendChild(renderizarLinhaFn(item)));
+                    containerBotaoEl.innerHTML = ''; // Remove o botão
+                }, { once: true }); // O evento só dispara uma vez
+            }
         }
 
-        // Renderizar índice de autores
+        // Renderizar índice de orientadores (VERSÃO MELHORADA COM DATA-LABELS)
+        function renderizarIndiceOrientadores() {
+            const corpoTabela = document.getElementById('corpo-tabela-orientadores');
+            const containerBotao = document.getElementById('orientadores-ver-mais-container');
+
+            const orientadoresArray = Array.from(orientadoresMap.entries())
+                .sort((a, b) => a[0].localeCompare(b[0]));
+
+            const renderizarLinha = ([nome, dados]) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap font-medium" data-label="Orientador">${nome}</td>
+                    <td class="px-6 py-4 whitespace-nowrap" data-label="TCCs">${dados.tcc}</td>
+                    <td class="px-6 py-4 whitespace-nowrap" data-label="Dissertações">${dados.dissertacao}</td>
+                    <td class="px-6 py-4 whitespace-nowrap" data-label="Teses">${dados.tese}</td>
+                    <td class="px-6 py-4" data-label="Participações em Bancas">${dados.bancas.size}</td>
+                `;
+                return row;
+            };
+
+            gerenciarPaginacaoTabela(corpoTabela, orientadoresArray, containerBotao, renderizarLinha, "orientadores");
+        }
+
+        // Renderizar índice de autores (VERSÃO MELHORADA COM DATA-LABELS)
         function renderizarIndiceAutores() {
             const corpoTabela = document.getElementById('corpo-tabela-autores');
-            corpoTabela.innerHTML = '';
-            
-            // Converter Map para array e ordenar alfabeticamente
+            const containerBotao = document.getElementById('autores-ver-mais-container');
+
             const autoresArray = Array.from(autoresMap.entries())
                 .sort((a, b) => a[0].localeCompare(b[0]));
-            
-            autoresArray.forEach(([nome, dados]) => {
+
+            const renderizarLinha = ([nome, dados]) => {
                 const row = document.createElement('tr');
-                
-                // Determinar evolução acadêmica
                 let evolucao = '';
-                if (dados.tcc > 0 && dados.dissertacao > 0 && dados.tese > 0) {
-                    evolucao = 'TCC → Dissertação → Tese';
-                } else if (dados.tcc > 0 && dados.dissertacao > 0) {
-                    evolucao = 'TCC → Dissertação';
-                } else if (dados.dissertacao > 0 && dados.tese > 0) {
-                    evolucao = 'Dissertação → Tese';
-                } else if (dados.tcc > 0) {
-                    evolucao = 'TCC';
-                } else if (dados.dissertacao > 0) {
-                    evolucao = 'Dissertação';
-                } else if (dados.tese > 0) {
-                    evolucao = 'Tese';
-                }
-                
+                if (dados.tcc > 0 && dados.dissertacao > 0 && dados.tese > 0) evolucao = 'TCC → Dissertação → Tese';
+                else if (dados.tcc > 0 && dados.dissertacao > 0) evolucao = 'TCC → Dissertação';
+                else if (dados.dissertacao > 0 && dados.tese > 0) evolucao = 'Dissertação → Tese';
+                else if (dados.tcc > 0) evolucao = 'TCC';
+                else if (dados.dissertacao > 0) evolucao = 'Dissertação';
+                else if (dados.tese > 0) evolucao = 'Tese';
+
                 row.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap font-medium">${nome}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">${dados.tcc}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">${dados.dissertacao}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">${dados.tese}</td>
-                    <td class="px-6 py-4">${evolucao}</td>
+                    <td class="px-6 py-4 whitespace-nowrap font-medium" data-label="Autor">${nome}</td>
+                    <td class="px-6 py-4 whitespace-nowrap" data-label="TCCs">${dados.tcc}</td>
+                    <td class="px-6 py-4 whitespace-nowrap" data-label="Dissertações">${dados.dissertacao}</td>
+                    <td class="px-6 py-4 whitespace-nowrap" data-label="Teses">${dados.tese}</td>
+                    <td class="px-6 py-4" data-label="Evolução Acadêmica">${evolucao}</td>
                 `;
-                corpoTabela.appendChild(row);
-            });
+                return row;
+            };
+
+            gerenciarPaginacaoTabela(corpoTabela, autoresArray, containerBotao, renderizarLinha, "autores");
         }
 
         // Renderizar evolução acadêmica
@@ -1512,7 +1806,7 @@
         /**
          * Processa os dados de trabalhos e renderiza um grafo de colaboração.
          */
-        function renderizarRedeColaboracao() {
+        function renderizarRedeColaboracao(trabalhos) {
             const nodesMap = new Map();
             const edges = [];
 
@@ -1528,7 +1822,7 @@
             }
             
             // Passo 1: Processar todos os trabalhos para criar nós e arestas
-            trabalhosProcessados.forEach(trabalho => {
+            trabalhos.forEach(trabalho => {
                 const autor = trabalho.autorNormalizado;
                 const orientador = trabalho.orientadorNormalizado;
                 const banca = trabalho.bancaNormalizada || [];
@@ -1722,6 +2016,155 @@
         }
 
         /**
+         * Processa os dados brutos para criar um mapa de temas com todas as informações necessárias.
+         * Deve ser chamada após processarDados().
+         */
+         function processarDadosMapaTematico() {
+            temasMap.clear(); // Limpa o mapa para garantir que não haja dados antigos
+
+            trabalhosProcessados.forEach(trabalho => {
+                if (!trabalho.descriptors || trabalho.descriptors.length === 0) {
+                    return; // Pula trabalhos sem descritores (temas principais)
+                }
+
+                trabalho.descriptors.forEach(tema => {
+                    // Se o tema ainda não está no mapa, inicializa sua estrutura
+                    if (!temasMap.has(tema)) {
+                        temasMap.set(tema, {
+                            tcc: 0,
+                            dissertacao: 0,
+                            tese: 0,
+                            autores: new Set(),
+                            orientadores: new Set(),
+                            assuntosRelacionados: new Map()
+                        });
+                    }
+
+                    const temaData = temasMap.get(tema);
+
+                    // 1. Incrementa o contador do tipo de trabalho
+                    if (trabalho.tipo === 'TCC') temaData.tcc++;
+                    else if (trabalho.tipo === 'Dissertação') temaData.dissertacao++;
+                    else if (trabalho.tipo === 'Tese') temaData.tese++;
+
+                    // 2. Adiciona autor e orientador (Sets evitam duplicatas)
+                    if (trabalho.autorNormalizado) temaData.autores.add(trabalho.autorNormalizado);
+                    if (trabalho.orientadorNormalizado) temaData.orientadores.add(trabalho.orientadorNormalizado);
+                    
+                    // 3. Adiciona todas as palavras-chave como assuntos relacionados
+                    trabalho.todasPalavrasChave.forEach(palavra => {
+                        if (palavra.toLowerCase() !== tema.toLowerCase()) {
+                            const currentCount = temaData.assuntosRelacionados.get(palavra) || 0;
+                            temaData.assuntosRelacionados.set(palavra, currentCount + 1);
+                        }
+                    });
+                });
+            });
+        }
+
+        /**
+         * Renderiza a tabela principal do Mapa Temático com a contagem de trabalhos por tema.
+         */
+         function renderizarMapaTematicoTabela() {
+            const corpoTabela = document.getElementById('corpo-tabela-temas');
+            const containerBotao = document.getElementById('temas-ver-mais-container');
+
+            // Calcula o total de trabalhos por tema para o ranking
+            const temasComTotal = Array.from(temasMap.entries()).map(([tema, dados]) => ({
+                tema,
+                dados,
+                total: dados.tcc + dados.dissertacao + dados.tese
+            }));
+
+            // Ordena por total para pegar os top 10
+            temasComTotal.sort((a, b) => b.total - a.total);
+            const top10Temas = new Set(temasComTotal.slice(0, 10).map(item => item.tema));
+
+            // Ordena alfabeticamente para exibição na tabela
+            const temasOrdenados = Array.from(temasMap.entries()).sort((a, b) => a[0].localeCompare(b[0]));
+
+            const renderizarLinha = ([tema, dados]) => {
+                const row = document.createElement('tr');
+                const isTop10 = top10Temas.has(tema);
+                row.innerHTML = `
+                    <td class="px-6 py-4 font-medium text-gray-800" data-label="Tema Principal">
+                        ${tema} ${isTop10 ? '<span title="Top 10 temas mais frequentes">🚩</span>' : ''}
+                    </td>
+                    <td class="px-6 py-4 text-center" data-label="TCCs">${dados.tcc}</td>
+                    <td class="px-6 py-4 text-center" data-label="Dissertações">${dados.dissertacao}</td>
+                    <td class="px-6 py-4 text-center" data-label="Teses">${dados.tese}</td>
+                `;
+                return row;
+            };
+
+            gerenciarPaginacaoTabela(corpoTabela, temasOrdenados, containerBotao, renderizarLinha, "temas");
+        }
+        
+        /**
+         * Popula o <select> com os temas disponíveis.
+         */
+        function popularFiltroMapaTematico() {
+            const selectTema = document.getElementById('filtro-mapa-tema');
+            const temasOrdenados = Array.from(temasMap.keys()).sort();
+
+            temasOrdenados.forEach(tema => {
+                const option = document.createElement('option');
+                option.value = tema;
+                option.textContent = tema;
+                selectTema.appendChild(option);
+            });
+        }
+
+        /**
+         * Exibe os detalhes (autores, orientadores, assuntos) de um tema selecionado.
+         * @param {string} temaSelecionado - O tema escolhido no <select>.
+         */
+         function exibirDetalhesTema(temaSelecionado) {
+            const containerDetalhes = document.getElementById('detalhes-tema-container');
+            const prompt = document.getElementById('prompt-tema');
+
+            if (!temaSelecionado) {
+                containerDetalhes.classList.add('hidden');
+                prompt.classList.remove('hidden');
+                return;
+            }
+
+            const dadosTema = temasMap.get(temaSelecionado);
+            if (!dadosTema) return;
+
+            const listaAssuntos = document.getElementById('lista-assuntos-tema');
+            const listaAutores = document.getElementById('lista-autores-tema');
+            const listaOrientadores = document.getElementById('lista-orientadores-tema');
+
+            listaAssuntos.innerHTML = '';
+            listaAutores.innerHTML = '';
+            listaOrientadores.innerHTML = '';
+
+            // Lógica para o ranking de Assuntos Relacionados
+            const assuntosArray = Array.from(dadosTema.assuntosRelacionados.entries());
+            assuntosArray.sort((a, b) => b[1] - a[1]); // Ordena por frequência (desc)
+            const top10Assuntos = new Set(assuntosArray.slice(0, 10).map(item => item[0]));
+
+            // Popula a lista de assuntos, agora com a flag
+            const assuntosHtml = assuntosArray
+                .sort((a, b) => a[0].localeCompare(b[0])) // Reordena alfabeticamente para exibição
+                .map(([assunto, _]) => {
+                    const isTop10 = top10Assuntos.has(assunto);
+                    return `<li>${assunto} ${isTop10 ? '<span title="Top 10 assuntos mais relacionados">🚩</span>' : ''}</li>`;
+                }).join('');
+            listaAssuntos.innerHTML = assuntosHtml || '<li>Nenhum assunto relacionado encontrado.</li>';
+
+            const autoresHtml = Array.from(dadosTema.autores).sort().map(autor => `<li>${autor}</li>`).join('');
+            listaAutores.innerHTML = autoresHtml || '<li>Nenhum autor encontrado para este tema.</li>';
+
+            const orientadoresHtml = Array.from(dadosTema.orientadores).sort().map(orientador => `<li>${orientador}</li>`).join('');
+            listaOrientadores.innerHTML = orientadoresHtml || '<li>Nenhum orientador encontrado para este tema.</li>';
+
+            containerDetalhes.classList.remove('hidden');
+            prompt.classList.add('hidden');
+        }
+
+        /**
          * Renderiza os controles e a lógica para a análise da jornada do autor, usando um <select>.
          */
         function renderizarJornadaAutor() {
@@ -1836,57 +2279,6 @@
             });
         }
     
-        // Inicialização
-        // document.addEventListener('DOMContentLoaded', () => {
-        //     // Data atual
-        //     // Data e hora de processamento
-        //     const agora = new Date();
-        //     document.getElementById('data-processamento').textContent = agora.toLocaleString('pt-BR');
-        //     document.getElementById('current-date').textContent = agora.toLocaleString('pt-BR');
-
-        //     const btnExportPdf = document.getElementById('btn-export-pdf');
-        //     if (btnExportPdf) {
-        //         btnExportPdf.addEventListener('click', exportarParaPDF);
-        //     }
-            
-        //     // Processar dados
-        //     processarDados();
-        //     processarDadosTemas();
-            
-        //     // Renderizar componentes
-        //     renderizarDadosGerais();
-        //     preencherFiltros();
-        //     renderizarTrabalhos();
-        //     renderizarPaginacao();
-        //     renderizarIndiceOrientadores();
-        //     renderizarIndiceAutores();
-        //     renderizarEvolucaoAcademica();
-        //     gerarNuvemPalavras();
-        //     renderizarRedeColaboracao();
-        //     renderizarEvolucaoTemas();
-        //     renderizarJornadaAutor();
-            
-        //     // Event listeners
-        //     document.getElementById('btn-aplicar-filtros').addEventListener('click', aplicarFiltros);
-        //     document.getElementById('btn-limpar-filtros').addEventListener('click', limparFiltros);
-        //     document.getElementById('fechar-modal').addEventListener('click', fecharModal);
-            
-        //     // Fechar modal ao clicar fora dele
-        //     document.getElementById('modal-trabalho').addEventListener('click', (e) => {
-        //         if (e.target.id === 'modal-trabalho') {
-        //             fecharModal();
-        //         }
-        //     });
-
-        //     // Adicionar evento de teclado para fechar modal com ESC
-        //     document.addEventListener('keydown', (e) => {
-        //         if (e.key === 'Escape') {
-        //             fecharModal();
-        //         }
-        //     });
-            
-        // });
-
         // --- INICIALIZAÇÃO ---
         // O evento DOMContentLoaded agora apenas chama a nossa função principal.
         document.addEventListener('DOMContentLoaded', iniciarAplicacao);
