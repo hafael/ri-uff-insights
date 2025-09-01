@@ -745,6 +745,12 @@
         <!-- Lista de Trabalhos Publicados -->
         <section id="trabalhos" class="mb-12 print-break">
             <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Lista de Trabalhos</h2>
+            
+            <div class="mb-4">
+                <label for="filtro-busca-textual" class="block text-sm font-medium text-gray-700 mb-1">Refinar lista atual:</label>
+                <input type="search" id="filtro-busca-textual" placeholder="Buscar nos resultados por título, autor, palavra-chave..." class="w-full p-2 border rounded shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition">
+            </div>
+
             <div id="info-trabalhos" class="mb-4 text-sm text-gray-600"></div>
             <div id="lista-trabalhos" class="space-y-6 relative">
                 <!-- Trabalhos serão carregados aqui via JavaScript -->
@@ -759,6 +765,9 @@
         <!-- Índice de Orientadores -->
         <section id="indice-orientadores" class="mb-12 print-break">
             <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Índice de Orientadores</h2>
+            <div class="mb-4">
+                <input type="search" id="busca-orientadores" placeholder="Buscar orientador pelo nome..." class="w-full md:w-1/2 p-2 border rounded shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition">
+            </div>
             <div id="tabela-orientadores" class="compact-card-table md:bg-white md:rounded-lg md:shadow overflow-hidden">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
@@ -781,6 +790,9 @@
         <!-- Índice de Autores -->
         <section id="indice-autores" class="mb-12 print-break">
             <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Índice de Autores</h2>
+            <div class="mb-4">
+                <input type="search" id="busca-autores" placeholder="Buscar autor pelo nome..." class="w-full md:w-1/2 p-2 border rounded shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition">
+            </div>
             <div id="tabela-autores" class="compact-card-table md:bg-white md:rounded-lg md:shadow overflow-hidden">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
@@ -816,6 +828,11 @@
             <div class="mb-4 p-4 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800" role="alert">
                 <span class="font-bold">Legenda:</span> O ícone 🚩 indica um dos 10 temas ou assuntos com maior número de trabalhos acadêmicos associados no repositório.
             </div>
+
+            <div class="mb-4">
+                <input type="search" id="busca-mapa-tematico" placeholder="Buscar tema pelo nome..." class="w-full md:w-1/2 p-2 border rounded shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition">
+            </div>
+
             <div class="bg-white p-4 md:p-6 rounded-xl shadow-lg border border-gray-100 space-y-8">
                 
                 <div>
@@ -1168,6 +1185,8 @@
         let mobileMenuBackdrop = null;
         let closeMenuBtn = null;
         let mobileMenuLinks = null;
+        let trabalhosExibidos = [];
+        let debounceTimer;
 
         // --- FUNÇÃO PRINCIPAL DE CARREGAMENTO E INICIALIZAÇÃO ---
         async function iniciarAplicacao() {
@@ -1288,8 +1307,10 @@
             renderizarDadosGerais(trabalhos); // Passa os trabalhos para os totais
             renderizarTrabalhos(); // Já usa a variável global 'filteredTrabalhos'
             renderizarPaginacao();
-            renderizarIndiceOrientadores();
-            renderizarIndiceAutores();
+            //renderizarIndiceOrientadores();
+            aplicarBuscaOrientadores();
+            //renderizarIndiceAutores();
+            aplicarBuscaAutores();
             renderizarEvolucaoAcademica();
             gerarNuvemPalavras();
             //renderizarRedeColaboracao(trabalhos); // Bloqueia o inicio automático
@@ -1298,7 +1319,8 @@
             renderizarJornadaAutor(); // Já usa o 'autoresMap' recalculado
             renderizarIndicadoresInfometricos(trabalhos);
             renderizarFiltrosAtivos(); // Renderiza os chips de filtros
-            renderizarMapaTematicoTabela();
+            //renderizarMapaTematicoTabela();
+            aplicarBuscaMapaTematico();
             popularFiltroMapaTematico();
         }
 
@@ -1327,6 +1349,39 @@
 
             // --- FIM LÓGICA PARA A NOVA BARRA DE NAVEGAÇÃO ---
 
+            // Listener para o campo de busca com Debounce
+            const campoBusca = document.getElementById('filtro-busca-textual');
+            campoBusca.addEventListener('input', () => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    aplicarBuscaLocal(); // AGORA CHAMA A FUNÇÃO DE BUSCA LOCAL
+                }, 500);
+            });
+
+            // Listeners para as novas buscas com Debounce
+            const campoBuscaOrientadores = document.getElementById('busca-orientadores');
+            campoBuscaOrientadores.addEventListener('input', () => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    aplicarBuscaOrientadores();
+                }, 400); // 400ms de atraso
+            });
+
+            const campoBuscaAutores = document.getElementById('busca-autores');
+            campoBuscaAutores.addEventListener('input', () => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    aplicarBuscaAutores();
+                }, 400); // 400ms de atraso
+            });
+
+            const campoBuscaMapaTematico = document.getElementById('busca-mapa-tematico');
+            campoBuscaMapaTematico.addEventListener('input', () => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    aplicarBuscaMapaTematico();
+                }, 400); // 400ms de atraso
+            });
 
             const btnExportPdf = document.getElementById('btn-export-pdf');
             if (btnExportPdf) {
@@ -1383,6 +1438,19 @@
             document.body.style.overflow = isAberto ? 'hidden' : '';
         }
 
+        /**
+         * Normaliza uma string para busca, removendo acentos, convertendo para minúsculas e removendo espaços excessivos.
+         * @param {string} str A string a ser normalizada.
+         * @returns {string} A string normalizada.
+         */
+        function normalizarStringParaBusca(str) {
+            if (!str || typeof str !== 'string') return '';
+            return str
+                .toLowerCase() // Converte para caixa baixa
+                .normalize("NFD") // Separa os caracteres dos acentos
+                .replace(/[\u0300-\u036f]/g, "") // Remove os acentos (diacríticos)
+                .trim(); // Remove espaços no início e fim
+        }
 
         // Normalização de nomes
         /**
@@ -1598,6 +1666,7 @@
             });
 
             filteredTrabalhos = [...trabalhosProcessados];
+            trabalhosExibidos = [...trabalhosProcessados];
 
             renderizarNormalizacaoNomes();
         }
@@ -1766,12 +1835,17 @@
             const orientador = document.getElementById('filtro-orientador').value;
             const tipo = document.getElementById('filtro-tipo').value;
 
+            // Filtra a partir da lista mestra
             filteredTrabalhos = trabalhosProcessados.filter(trabalho => {
                 return (!area || (trabalho.descriptors && trabalho.descriptors.includes(area))) &&
-                       (!ano || trabalho.ano === ano) &&
-                       (!orientador || trabalho.orientadorNormalizado === orientador) &&
-                       (!tipo || trabalho.tipo === tipo);
+                    (!ano || trabalho.ano === ano) &&
+                    (!orientador || trabalho.orientadorNormalizado === orientador) &&
+                    (!tipo || trabalho.tipo === tipo);
             });
+
+            // IMPORTANTE: Reseta a busca textual e atualiza a lista a ser exibida
+            document.getElementById('filtro-busca-textual').value = '';
+            trabalhosExibidos = [...filteredTrabalhos];
             
             currentPage = 1; // Reseta a paginação
             atualizarDashboard(filteredTrabalhos); // Chama a função mestra
@@ -1782,15 +1856,46 @@
         function limparFiltros() {
 
             resetarVisualizacoesDeGrafos();
-
             document.getElementById('filtro-area').value = '';
             document.getElementById('filtro-ano').value = '';
             document.getElementById('filtro-orientador').value = '';
             document.getElementById('filtro-tipo').value = '';
+            document.getElementById('filtro-busca-textual').value = ''; // <<< ADICIONE ESTA LINHA
+            document.getElementById('busca-orientadores').value = ''; // <<< ADICIONE ESTA LINHA
+            document.getElementById('busca-autores').value = '';    // <<< ADICIONE ESTA LINHA
+            document.getElementById('busca-mapa-tematico').value = '';
             
             filteredTrabalhos = [...trabalhosProcessados];
             currentPage = 1;
-            atualizarDashboard(trabalhosProcessados); // Chama a função mestra
+            atualizarDashboard(trabalhosProcessados);
+        }
+
+        /**
+         * Filtra a lista de trabalhos JÁ FILTRADA (filteredTrabalhos)
+         * com base no termo de busca textual e atualiza APENAS a lista e a paginação.
+         * UTILIZA NORMALIZAÇÃO DE STRING PARA IGNORAR ACENTOS E CAIXA.
+         */
+        function aplicarBuscaLocal() {
+            // A busca agora usa a função de normalização completa
+            const termoBusca = normalizarStringParaBusca(document.getElementById('filtro-busca-textual').value);
+
+            if (!termoBusca) {
+                // Se a busca está vazia, mostra todos os resultados do filtro global
+                trabalhosExibidos = [...filteredTrabalhos];
+            } else {
+                // Filtra a lista `filteredTrabalhos` aplicando a normalização em cada campo
+                trabalhosExibidos = filteredTrabalhos.filter(trabalho => {
+                    return (trabalho.title && normalizarStringParaBusca(trabalho.title).includes(termoBusca)) ||
+                        (trabalho.autorNormalizado && normalizarStringParaBusca(trabalho.autorNormalizado).includes(termoBusca)) ||
+                        (trabalho.orientadorNormalizado && normalizarStringParaBusca(trabalho.orientadorNormalizado).includes(termoBusca)) ||
+                        (trabalho.todasPalavrasChave && trabalho.todasPalavrasChave.some(kw => normalizarStringParaBusca(kw).includes(termoBusca))) ||
+                        (trabalho.bancaNormalizada && trabalho.bancaNormalizada.some(membro => normalizarStringParaBusca(membro).includes(termoBusca)));
+                });
+            }
+
+            currentPage = 1;
+            renderizarTrabalhos();
+            renderizarPaginacao();
         }
     
         // Renderizar trabalhos (VERSÃO MELHORADA)
@@ -1801,7 +1906,7 @@
             
             listaTrabalhos.innerHTML = '';
 
-            const totalTrabalhos = filteredTrabalhos.length;
+            const totalTrabalhos = trabalhosExibidos.length;
             const startIndex = (currentPage - 1) * itemsPerPage;
             const endIndex = Math.min(startIndex + itemsPerPage, totalTrabalhos);
 
@@ -1817,7 +1922,7 @@
             listaTrabalhos.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-6';
 
             for (let i = startIndex; i < endIndex; i++) {
-                const trabalho = filteredTrabalhos[i];
+                const trabalho = trabalhosExibidos[i];
                 const trabalhoEl = document.createElement('div');
                 
                 trabalhoEl.className = 'bg-white p-5 rounded-xl shadow-lg border border-gray-100 flex flex-col justify-between transition-all duration-300 hover:shadow-xl hover:border-blue-200 cursor-pointer';
@@ -1884,7 +1989,7 @@
             paginacaoContainer.innerHTML = '';
             infoTrabalhosEl.innerHTML = '';
 
-            const totalTrabalhos = filteredTrabalhos.length;
+            const totalTrabalhos = trabalhosExibidos.length;
             const totalPages = Math.ceil(totalTrabalhos / itemsPerPage);
             
             if (totalPages <= 1) return;
@@ -2121,12 +2226,9 @@
         }
 
         // Renderizar índice de orientadores (VERSÃO MELHORADA COM DATA-LABELS)
-        function renderizarIndiceOrientadores() {
+        function renderizarIndiceOrientadores(orientadoresArray) {
             const corpoTabela = document.getElementById('corpo-tabela-orientadores');
             const containerBotao = document.getElementById('orientadores-ver-mais-container');
-
-            const orientadoresArray = Array.from(orientadoresMap.entries())
-                .sort((a, b) => a[0].localeCompare(b[0]));
 
             const renderizarLinha = ([nome, dados]) => {
                 const row = document.createElement('tr');
@@ -2167,13 +2269,21 @@
             gerenciarPaginacaoTabela(corpoTabela, orientadoresArray, containerBotao, renderizarLinha, "orientadores");
         }
 
+        function aplicarBuscaOrientadores() {
+            const termoBusca = normalizarStringParaBusca(document.getElementById('busca-orientadores').value);
+            const orientadoresArray = Array.from(orientadoresMap.entries());
+
+            const orientadoresFiltrados = termoBusca
+                ? orientadoresArray.filter(([nome, _]) => normalizarStringParaBusca(nome).includes(termoBusca))
+                : orientadoresArray;
+
+            renderizarIndiceOrientadores(orientadoresFiltrados.sort((a, b) => a[0].localeCompare(b[0])));
+        }
+
         // Renderizar índice de autores (VERSÃO MELHORADA COM DATA-LABELS)
-        function renderizarIndiceAutores() {
+        function renderizarIndiceAutores(autoresArray) {
             const corpoTabela = document.getElementById('corpo-tabela-autores');
             const containerBotao = document.getElementById('autores-ver-mais-container');
-
-            const autoresArray = Array.from(autoresMap.entries())
-                .sort((a, b) => a[0].localeCompare(b[0]));
 
             const renderizarLinha = ([nome, dados]) => {
                 const row = document.createElement('tr');
@@ -2216,6 +2326,17 @@
             };
             
             gerenciarPaginacaoTabela(corpoTabela, autoresArray, containerBotao, renderizarLinha, "autores");
+        }
+
+        function aplicarBuscaAutores() {
+            const termoBusca = normalizarStringParaBusca(document.getElementById('busca-autores').value);
+            const autoresArray = Array.from(autoresMap.entries());
+            
+            const autoresFiltrados = termoBusca
+                ? autoresArray.filter(([nome, _]) => normalizarStringParaBusca(nome).includes(termoBusca))
+                : autoresArray;
+
+            renderizarIndiceAutores(autoresFiltrados.sort((a, b) => a[0].localeCompare(b[0])));
         }
 
         // Renderizar evolução acadêmica
@@ -2825,24 +2946,19 @@
         /**
          * Renderiza a tabela principal do Mapa Temático com a contagem de trabalhos por tema.
          */
-         function renderizarMapaTematicoTabela() {
+         function renderizarMapaTematicoTabela(temasParaRenderizar) { // Agora aceita um array
             const corpoTabela = document.getElementById('corpo-tabela-temas');
             const containerBotao = document.getElementById('temas-ver-mais-container');
 
             // Calcula o total de trabalhos por tema para o ranking
             const temasComTotal = Array.from(temasMap.entries()).map(([tema, dados]) => ({
                 tema,
-                dados,
                 total: dados.tcc + dados.dissertacao + dados.tese
             }));
-
-            // Ordena por total para pegar os top 10
             temasComTotal.sort((a, b) => b.total - a.total);
             const top10Temas = new Set(temasComTotal.slice(0, 10).map(item => item.tema));
 
-            // Ordena alfabeticamente para exibição na tabela
-            const temasOrdenados = Array.from(temasMap.entries()).sort((a, b) => a[0].localeCompare(b[0]));
-
+            // A função de renderizar a linha permanece a mesma, mas agora usa o array filtrado
             const renderizarLinha = ([tema, dados]) => {
                 const row = document.createElement('tr');
                 const isTop10 = top10Temas.has(tema);
@@ -2857,7 +2973,7 @@
                 return row;
             };
 
-            gerenciarPaginacaoTabela(corpoTabela, temasOrdenados, containerBotao, renderizarLinha, "temas");
+            gerenciarPaginacaoTabela(corpoTabela, temasParaRenderizar, containerBotao, renderizarLinha, "temas");
         }
         
         /**
@@ -2922,6 +3038,20 @@
 
             containerDetalhes.classList.remove('hidden');
             prompt.classList.add('hidden');
+        }
+
+        /**
+         * Aplica a busca na tabela do Mapa Temático.
+         */
+        function aplicarBuscaMapaTematico() {
+            const termoBusca = normalizarStringParaBusca(document.getElementById('busca-mapa-tematico').value);
+            const temasArray = Array.from(temasMap.entries());
+
+            const temasFiltrados = termoBusca
+                ? temasArray.filter(([tema, _]) => normalizarStringParaBusca(tema).includes(termoBusca))
+                : temasArray;
+
+            renderizarMapaTematicoTabela(temasFiltrados.sort((a, b) => a[0].localeCompare(b[0])));
         }
 
         /**
