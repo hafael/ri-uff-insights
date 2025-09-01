@@ -391,8 +391,11 @@
                     <a href="#mapa-tematico" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Mapa Temático</a>
                     <a href="#nuvem-palavras" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Nuvem</a>
                     <a href="#rede-colaboracao-secao" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Redes</a>
+                    <a href="#mapa-ciencia-secao" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Mapa da Ciência</a> 
                     <a href="#temas-evolucao-secao" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Temas</a>
                     <a href="#jornada-autor-secao" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Jornada</a>
+                    <a href="#infometricos-secao" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Infometria</a>
+                    
                 </div>
     
                 <div class="md:hidden flex items-center">
@@ -422,8 +425,10 @@
                 <a href="#mapa-tematico" class="mobile-menu-link text-2xl text-gray-700 hover:text-blue-600">Mapa Temático</a>
                 <a href="#nuvem-palavras" class="mobile-menu-link text-2xl text-gray-700 hover:text-blue-600">Nuvem de Palavras</a>
                 <a href="#rede-colaboracao-secao" class="mobile-menu-link text-2xl text-gray-700 hover:text-blue-600">Rede de Colaboração</a>
+                <a href="#mapa-ciencia-secao" class="mobile-menu-link text-2xl text-gray-700 hover:text-blue-600">Mapa da Ciência</a>
                 <a href="#temas-evolucao-secao" class="mobile-menu-link text-2xl text-gray-700 hover:text-blue-600">Evolução Temática</a>
                 <a href="#jornada-autor-secao" class="mobile-menu-link text-2xl text-gray-700 hover:text-blue-600">Jornada do Autor</a>
+                <a href="#infometricos-secao" class="mobile-menu-link text-2xl text-gray-700 hover:text-blue-600">Infometria</a>
             </div>
         </div>
     </nav>
@@ -796,6 +801,26 @@
             </div>
         </section>
 
+        <section id="infometricos-secao" class="mb-12 print-break">
+            <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Indicadores Infométricos do Repositório</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-4 md:p-6 rounded-lg shadow">
+                    <h3 class="text-lg font-medium text-blue-700 mb-4 text-center">Tempo entre Defesa e Disponibilização Online</h3>
+                    <div class="relative h-[300px]">
+                        <canvas id="grafico-time-to-online"></canvas>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2 text-center">Mede a eficiência do processo de publicação no repositório.</p>
+                </div>
+                <div class="bg-white p-4 md:p-6 rounded-lg shadow">
+                    <h3 class="text-lg font-medium text-blue-700 mb-4 text-center">Distribuição de Licenças de Acesso Aberto</h3>
+                    <div class="relative h-[300px]">
+                        <canvas id="grafico-licencas"></canvas>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2 text-center">Mostra a adesão a diferentes tipos de licenças Creative Commons.</p>
+                </div>
+            </div>
+        </section>
+
         <!-- Nuvem de Palavras -->
         <section id="nuvem-palavras" class="mb-12 print-break">
             <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Nuvem de Palavras</h2>
@@ -808,28 +833,123 @@
         </section>
 
         <!-- Redes de Colaboração -->
-        <section id="rede-colaboracao-secao" class="mb-4 bg-white rounded-lg shadow overflow-hidden">
-            <h2 class="accordion-button flex justify-between items-center p-4 lg:p-6 text-2xl font-semibold border-b">
-                <span>Análise de Redes de Colaboração</span>
-                <svg class="accordion-icon h-6 w-6 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
-            </h2>
-            <div class="accordion-panel">
+        <section id="rede-colaboracao-secao" class="mb-12 print-break">
+            <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Análise de Redes de Colaboração</h2>
+            <div class="bg-white p-4 md:p-6 rounded-lg shadow">
+        
                 <div class="p-4 lg:p-6 border-t">
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <div class="lg:col-span-2">
-                            <p class="text-sm text-gray-600 mb-4">
-                                Este grafo interativo visualiza as conexões entre orientadores, autores e membros de banca. O tamanho de cada nó representa sua centralidade (número de conexões). Passe o mouse sobre um nó para destacar suas conexões.
-                            </p>
-                            <div id="rede-colaboracao-container" class="border rounded-lg" style="height: 600px; width: 100%;">
-                                </div>
-                        </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         <div class="lg:col-span-1">
-                            <h3 class="text-lg font-medium text-blue-700 mb-4">Métricas Principais da Rede</h3>
-                            <div id="metricas-rede" class="space-y-4">
+                            <div class="mb-6 bg-gray-50 p-4 rounded-lg border">
+                                <h3 class="text-lg font-medium text-blue-700 mb-4">Controles da Rede</h3>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label for="slider-pesquisadores" class="block text-sm font-medium text-gray-700">Nº de pesquisadores a exibir (por centralidade):</label>
+                                        <input type="range" id="slider-pesquisadores" min="10" max="150" value="50" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                        <span id="valor-slider-pesquisadores" class="text-sm text-blue-600 font-semibold">50 pesquisadores</span>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Tipos de Vínculos a Exibir:</label>
+                                        <div class="space-y-2">
+                                            <label class="flex items-center">
+                                                <input type="checkbox" id="check-orientadores" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" checked>
+                                                <span class="ml-2 text-sm text-gray-700">Orientadores</span>
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="checkbox" id="check-autores" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" checked>
+                                                <span class="ml-2 text-sm text-gray-700">Autores</span>
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="checkbox" id="check-bancas" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" checked>
+                                                <span class="ml-2 text-sm text-gray-700">Membros de Banca</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                
+                            <div class="text-center mb-6">
+                                 <button id="btn-render-rede" class="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition-colors w-full">
+                                    Gerar / Atualizar Rede
+                                </button>
+                            </div>
+                            
+                            <div>
+                                <h3 class="text-lg font-medium text-blue-700 mb-2">Pesquisadores Mais Centrais</h3>
+                                <p class="text-xs text-gray-500 mb-2">(visíveis na rede atual)</p>
+                                <div id="metricas-rede" class="space-y-2 text-sm text-gray-700 max-h-60 overflow-y-auto">
+                                    </div>
+                            </div>
+                        </div>
+                
+                        <div class="lg:col-span-2">
+                             <div id="rede-colaboracao-placeholder" class="flex items-center justify-center h-full border rounded-lg bg-gray-50 p-8">
+                                 <p class="text-center text-gray-600">Ajuste os controles e clique em "Gerar / Atualizar Rede" para criar a visualização.</p>
+                            </div>
+                            <div id="rede-colaboracao-wrapper" class="hidden">
+                                 <div class="flex justify-end mb-2">
+                                    <button id="btn-fechar-rede" class="text-sm bg-gray-200 text-gray-700 px-3 py-1 rounded hover:bg-gray-300 transition-colors">
+                                        &times; Fechar Rede
+                                    </button>
+                                </div>
+                                <div id="rede-colaboracao-container" class="border rounded-lg" style="height: 600px; width: 100%;">
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        
+            </div>
+        </section>
+
+        <section id="mapa-ciencia-secao" class="mb-12 print-break">
+            <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Análise de Coocorrência de Temas (Mapa da Ciência)</h2>
+            <div class="bg-white p-4 md:p-6 rounded-lg shadow">
+        
+                <div class="p-4 lg:p-6 border-t">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div class="lg:col-span-1">
+                            <div class="mb-6 bg-gray-50 p-4 rounded-lg border">
+                                <h3 class="text-lg font-medium text-blue-700 mb-4">Controles do Gráfico</h3>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label for="slider-temas" class="block text-sm font-medium text-gray-700">Número de temas a exibir:</label>
+                                        <input type="range" id="slider-temas" min="10" max="100" value="30" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                        <span id="valor-slider-temas" class="text-sm text-blue-600 font-semibold">30 temas</span>
+                                    </div>
+                                    <div>
+                                        <label for="slider-conexoes" class="block text-sm font-medium text-gray-700">Força mínima da conexão:</label>
+                                        <input type="range" id="slider-conexoes" min="2" max="10" value="2" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                        <span id="valor-slider-conexoes" class="text-sm text-blue-600 font-semibold">2 coocorrências</span>
+                                    </div>
+                                </div>
+                            </div>
+                
+                            <div class="text-center mb-6">
+                                 <button id="btn-render-mapa" class="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition-colors w-full">
+                                    Gerar / Atualizar Mapa
+                                </button>
+                            </div>
+                
+                            <div>
+                                <h3 class="text-lg font-medium text-blue-700 mb-2">Pares de Temas Mais Fortes</h3>
+                                <p class="text-xs text-gray-500 mb-2">(com base nos filtros atuais)</p>
+                                <div id="metricas-mapa-ciencia" class="space-y-2 text-sm text-gray-700 max-h-60 overflow-y-auto">
+                                    </div>
+                            </div>
+                        </div>
+                
+                        <div class="lg:col-span-2">
+                            <div id="mapa-ciencia-placeholder" class="flex items-center justify-center h-full border rounded-lg bg-gray-50 p-8">
+                                 <p class="text-center text-gray-600">Ajuste os controles e clique em "Gerar / Atualizar Mapa" para criar a visualização.</p>
+                            </div>
+                            <div id="mapa-ciencia-container" class="border rounded-lg hidden" style="height: 600px; width: 100%;">
                                 </div>
                         </div>
                     </div>
                 </div>
+                
+                
             </div>
         </section>
 
@@ -918,6 +1038,7 @@
         // Variáveis globais
         let trabalhosProcessados = [];
         let orientadoresMap = new Map();
+        let participacoesBancaMap = new Map();
         let autoresMap = new Map();
         let areasTematicas = new Set();
         let anos = new Set();
@@ -929,13 +1050,16 @@
         let temasPorAno = new Map();
         let graficoEvolucaoTema = null;
         let graficoTemporalInstance = null;
+        let graficoTimeToOnline = null;
+        let graficoLicencas = null;
+        let redeNetworkInstance = null;
+        let mapaNetworkInstance = null;
         let temasMap = new Map();
         let hamburgerBtn = null;
         let mobileMenu = null;
         let mobileMenuBackdrop = null;
         let closeMenuBtn = null;
         let mobileMenuLinks = null;
-        
 
         // --- FUNÇÃO PRINCIPAL DE CARREGAMENTO E INICIALIZAÇÃO ---
         async function iniciarAplicacao() {
@@ -979,10 +1103,7 @@
 
                 // Adicionar Event Listeners
                 configurarEventListeners();
-                // Atrasamos a abertura dos accordions para evitar conflito de renderização com o menu
-                setTimeout(() => {
-                    abrirTodosAccordions();
-                }, 100); // Um pequeno atraso de 100ms é suficiente
+
                 // Primeira renderização com todos os dados
                 atualizarDashboard(trabalhosProcessados);
 
@@ -1000,10 +1121,6 @@
                     </div>
                 `;
             }
-        }
-
-        function carregaDataset() {
-
         }
 
         /**
@@ -1067,9 +1184,11 @@
             renderizarIndiceAutores();
             renderizarEvolucaoAcademica();
             gerarNuvemPalavras();
-            renderizarRedeColaboracao(trabalhos); // Passa os trabalhos para a rede
+            //renderizarRedeColaboracao(trabalhos); // Bloqueia o inicio automático
+            //renderizarMapaDaCiencia(trabalhos); // Bloqueia o inicio automático
             renderizarEvolucaoTemas();
             renderizarJornadaAutor(); // Já usa o 'autoresMap' recalculado
+            renderizarIndicadoresInfometricos(trabalhos);
             renderizarFiltrosAtivos(); // Renderiza os chips de filtros
             renderizarMapaTematicoTabela();
             popularFiltroMapaTematico();
@@ -1115,22 +1234,6 @@
                 if (e.key === 'Escape') fecharModal();
             });
 
-            // Lógica para o Accordion
-            const accordions = document.querySelectorAll('.accordion-button');
-            accordions.forEach(button => {
-                button.addEventListener('click', () => {
-
-                    // Abrir/Fechar o accordion clicado
-                    button.classList.toggle('active');
-                    const panel = button.nextElementSibling;
-                    if (panel.style.maxHeight) {
-                        panel.style.maxHeight = null;
-                    } else {
-                        panel.style.maxHeight = panel.scrollHeight + "px";
-                    }
-                });
-            });
-
             // Lógica para o botão Voltar ao Topo
             const btnVoltarTopo = document.getElementById('btn-voltar-topo');
             window.addEventListener('scroll', () => {
@@ -1148,6 +1251,9 @@
             document.getElementById('filtro-mapa-tema').addEventListener('change', (e) => {
                 exibirDetalhesTema(e.target.value);
             });
+
+            configurarControlesRedeColaboracao();
+            configurarControlesMapaCiencia();
         }
     
         // --- LÓGICA PARA A NOVA BARRA DE NAVEGAÇÃO ---
@@ -1169,20 +1275,6 @@
             document.body.style.overflow = isAberto ? 'hidden' : '';
         }
 
-        /**
-         * Percorre todos os accordions e os coloca no estado "aberto" por padrão.
-         */
-         function abrirTodosAccordions() {
-            const accordions = document.querySelectorAll('.accordion-button');
-            accordions.forEach(button => {
-                button.classList.add('active'); // Adiciona a classe para girar o ícone
-                const panel = button.nextElementSibling;
-                if (panel) {
-                    // Define a altura máxima do painel para a sua altura total de conteúdo
-                    panel.style.maxHeight = panel.scrollHeight + "px";
-                }
-            });
-        }
 
         // Normalização de nomes
         /**
@@ -1382,6 +1474,20 @@
                 if (a.ano === 'Não informado') return 1; if (b.ano === 'Não informado') return -1;
                 return parseInt(b.ano) - parseInt(a.ano);
             });
+            
+            // Calcula o total de participações em bancas para cada membro
+            participacoesBancaMap.clear(); // Limpa para garantir contagem fresca
+            
+            trabalhosProcessados.forEach(trabalho => {
+                if (trabalho.bancaNormalizada) {
+                    trabalho.bancaNormalizada.forEach(membro => {
+                        if (membro) { // Garante que o membro não seja nulo ou vazio
+                            const count = participacoesBancaMap.get(membro) || 0;
+                            participacoesBancaMap.set(membro, count + 1);
+                        }
+                    });
+                }
+            });
 
             filteredTrabalhos = [...trabalhosProcessados];
 
@@ -1544,6 +1650,9 @@
         // Aplicar filtros
         // MODIFICADA: Agora apenas aplica o filtro e chama a atualização
         function aplicarFiltros() {
+
+            resetarVisualizacoesDeGrafos();
+
             const area = document.getElementById('filtro-area').value;
             const ano = document.getElementById('filtro-ano').value;
             const orientador = document.getElementById('filtro-orientador').value;
@@ -1563,6 +1672,9 @@
         // Limpar filtros
         // MODIFICADA: Limpa os filtros e chama a atualização com os dados completos
         function limparFiltros() {
+
+            resetarVisualizacoesDeGrafos();
+
             document.getElementById('filtro-area').value = '';
             document.getElementById('filtro-ano').value = '';
             document.getElementById('filtro-orientador').value = '';
@@ -1844,6 +1956,31 @@
             document.getElementById('modal-trabalho').classList.add('hidden');
         }
     
+        // Resetar visualizações de grafos
+        function resetarVisualizacoesDeGrafos() {
+            // --- Reseta a Rede de Colaboração ---
+            // Destrói a instância do gráfico anterior para liberar memória
+            if (redeNetworkInstance) {
+                redeNetworkInstance.destroy();
+                redeNetworkInstance = null;
+            }
+            // Esconde o wrapper que contém o gráfico e o botão "Fechar"
+            document.getElementById('rede-colaboracao-wrapper').classList.add('hidden');
+            // Mostra o placeholder com a mensagem inicial
+            document.getElementById('rede-colaboracao-placeholder').classList.remove('hidden');
+
+            // --- Reseta o Mapa da Ciência ---
+            // Destrói a instância do gráfico anterior para liberar memória
+            if (mapaNetworkInstance) {
+                mapaNetworkInstance.destroy();
+                mapaNetworkInstance = null;
+            }
+            // Esconde o wrapper que contém o gráfico
+            document.getElementById('mapa-ciencia-wrapper').classList.add('hidden');
+            // Mostra o placeholder com a mensagem inicial
+            document.getElementById('mapa-ciencia-placeholder').classList.remove('hidden');
+        }
+
         /**
          * Gerencia a exibição de tabelas com a funcionalidade "ver mais".
          * Limita a exibição inicial e adiciona um botão para mostrar todos os itens.
@@ -1885,14 +2022,18 @@
 
             const renderizarLinha = ([nome, dados]) => {
                 const row = document.createElement('tr');
+                
+                // >>> MODIFICAÇÃO PRINCIPAL AQUI <<<
+                // Busca a contagem de participações no novo mapa
+                const participacoes = participacoesBancaMap.get(nome) || 0;
+
                 row.innerHTML = `
                     <td class="px-6 py-4 whitespace-nowrap font-medium" data-label="Orientador">${nome}</td>
                     <td class="px-6 py-4 whitespace-nowrap" data-label="TCCs">${dados.tcc}</td>
                     <td class="px-6 py-4 whitespace-nowrap" data-label="Dissertações">${dados.dissertacao}</td>
                     <td class="px-6 py-4 whitespace-nowrap" data-label="Teses">${dados.tese}</td>
-                    <td class="px-6 py-4" data-label="Participações em Bancas">${dados.bancas.size}</td>
+                    <td class="px-6 py-4" data-label="Participações em Bancas">${participacoes}</td>
                 `;
-                //add class shadow-md to row element
                 row.classList.add('shadow-md', 'sm:shadow-none');
                 return row;
             };
@@ -1978,45 +2119,83 @@
             });
         }
 
+        /**
+         * Calcula os scores de relevância para todas as palavras-chave no corpus.
+         * O score é uma multiplicação da Frequência Total pelo IDF (Inverse Document Frequency).
+         * Retorna um Map com a palavra como chave e seu score como valor.
+         * @param {Array} trabalhos - O array de trabalhos (filtrado ou completo).
+         * @param {Map} frequenciaTotalMap - O mapa com a contagem de frequência total de cada palavra (palavrasChaveMap).
+         * @returns {Map<string, number>} - Um mapa de palavras e seus scores de relevância.
+         */
+        function calcularScoresNuvem(trabalhos, frequenciaTotalMap) {
+            const scoresFinais = new Map();
+            const totalDocumentos = trabalhos.length;
+
+            if (totalDocumentos === 0) return scoresFinais;
+
+            // Passo 1: Calcular a Frequência nos Documentos (DF) para cada palavra
+            // Ou seja, em quantos trabalhos cada palavra aparece pelo menos uma vez.
+            const dfMap = new Map();
+            trabalhos.forEach(trabalho => {
+                const palavrasUnicasNoDoc = new Set(trabalho.todasPalavrasChave);
+                palavrasUnicasNoDoc.forEach(palavra => {
+                    dfMap.set(palavra, (dfMap.get(palavra) || 0) + 1);
+                });
+            });
+
+            // Passo 2: Calcular o score final (Frequência Total * IDF) para cada palavra
+            frequenciaTotalMap.forEach((frequencia, palavra) => {
+                const df = dfMap.get(palavra) || 1; // Document Frequency da palavra
+                // A fórmula do IDF penaliza palavras que aparecem em muitos documentos.
+                const idf = Math.log(totalDocumentos / df); 
+                const score = frequencia * idf;
+                scoresFinais.set(palavra, score);
+            });
+
+            return scoresFinais;
+        }
+
         // Gerar nuvem de palavras
         function gerarNuvemPalavras() {
             const canvas = document.getElementById('nuvem-palavras-canvas');
             const legenda = document.getElementById('legenda-nuvem');
             
-            // Limpar canvas primeiro
-            canvas.innerHTML = '';
+            canvas.innerHTML = ''; // Limpa o canvas
             
+            // Usa o mapa de frequência já calculado pela função atualizarDashboard
             if (palavrasChaveMap.size === 0) {
-                canvas.innerHTML = '<p class="text-gray-500 text-center py-8">Não há palavras-chave disponíveis para gerar a nuvem.</p>';
+                canvas.innerHTML = '<p class="text-gray-500 text-center py-8">Não há palavras-chave para os filtros selecionados.</p>';
+                legenda.innerHTML = '';
                 return;
             }
+
+            // >>> NOVA LÓGICA: CALCULAR SCORES DE RELEVÂNCIA <<<
+            const scoresNuvem = calcularScoresNuvem(filteredTrabalhos, palavrasChaveMap);
+
+            // Converte os scores em uma lista no formato [palavra, peso]
+            const scoresArray = Array.from(scoresNuvem.entries());
+            const maxScore = scoresArray.length > 0 ? Math.max(...scoresArray.map(item => item[1])) : 0;
             
+            const listaNuvem = scoresArray
+                .map(([palavra, score]) => [palavra, (score / maxScore) * 50 + 10]) // Normaliza e ajusta a escala
+                .sort((a, b) => b[1] - a[1]) // Ordena pelo peso
+                .slice(0, 60); // Limita às 60 palavras mais relevantes
+
+            if (listaNuvem.length === 0 || maxScore === 0) {
+                canvas.innerHTML = '<p class="text-gray-500 text-center py-8">Não há palavras-chave relevantes para gerar a nuvem.</p>';
+                legenda.innerHTML = '';
+                return;
+            }
+
             try {
-                // Calcular frequências normalizadas (0 a 1)
-                const maxFreq = Math.max(...palavrasChaveMap.values());
-                const palavrasComFreq = Array.from(palavrasChaveMap.entries())
-                    .map(([palavra, freq]) => [palavra, (freq / maxFreq).toFixed(2)]);
-
-                // Filtrar palavras muito raras e limitar a 40 palavras
-                const listaNuvem = palavrasComFreq
-                    .filter(([_, freq]) => parseFloat(freq) > 0.1)
-                    .slice(0, 40)
-                    .map(([palavra, freq]) => [palavra, parseFloat(freq) * 50 + 10]); // Ajustar escala
-
-                // Verificar se há palavras para exibir
-                if (listaNuvem.length === 0) {
-                    canvas.innerHTML = '<p class="text-gray-500 text-center py-8">Não há palavras-chave suficientes para gerar a nuvem.</p>';
-                    return;
-                }
-
-                // Configurações otimizadas para a nuvem de palavras
                 WordCloud(canvas, {
                     list: listaNuvem,
-                    gridSize: 10,
+                    gridSize: Math.round(16 * 1024 / canvas.offsetWidth),
                     weightFactor: 8,
                     fontFamily: 'Arial, sans-serif',
                     color: function () {
-                        return '#' + Math.floor(Math.random() * 0xFFFFFF).toString(16);
+                        const colors = ['#1e3a8a', '#3b82f6', '#10b981', '#8b5cf6', '#4b5563'];
+                        return colors[Math.floor(Math.random() * colors.length)];
                     },
                     rotateRatio: 0.3,
                     rotationSteps: 2,
@@ -2026,21 +2205,22 @@
                     drawOutOfBound: false
                 });
 
-                // Gerar legenda CORRIGIDA - mostrando frequência normalizada
-                const palavrasDestacadas = palavrasComFreq
-                    .sort((a, b) => parseFloat(b[1]) - parseFloat(a[1]))
+                // Gerar legenda com base nos scores
+                const palavrasDestacadas = scoresArray
+                    .sort((a, b) => b[1] - a[1])
                     .slice(0, 8);
                     
-                legenda.innerHTML = '<p class="font-medium mb-2">Palavras mais frequentes (frequência normalizada 0-1):</p>' +
-                    palavrasDestacadas.map(([palavra, freqNormalizada]) => 
+                legenda.innerHTML = '<p class="font-medium mb-2">Termos mais relevantes (Score de Relevância):</p>' +
+                    palavrasDestacadas.map(([palavra, score]) => 
                         `<span class="inline-block bg-gray-100 px-3 py-1 rounded text-sm mr-2 mb-2">
-                            <span class="font-semibold">${palavra}:</span> ${parseFloat(freqNormalizada).toFixed(2)}
+                            <span class="font-semibold">${palavra}:</span> ${score.toFixed(2)}
                         </span>`
                     ).join('');
 
             } catch (error) {
                 console.error('Erro ao gerar nuvem de palavras:', error);
-                canvas.innerHTML = '<p class="text-red-500 text-center py-8">Erro ao gerar nuvem de palavras. Tente recarregar a página.</p>';
+                canvas.innerHTML = '<p class="text-red-500 text-center py-8">Erro ao gerar nuvem de palavras.</p>';
+                legenda.innerHTML = '';
             }
         }
 
@@ -2048,68 +2228,87 @@
          * Processa os dados de trabalhos e renderiza um grafo de colaboração.
          */
         function renderizarRedeColaboracao(trabalhos) {
+            
+            const container = document.getElementById('rede-colaboracao-container');
+            const containerMetricas = document.getElementById('metricas-rede');
+            container.innerHTML = '';
+            containerMetricas.innerHTML = '';
+
+            // Lê os valores dos controles
+            const numPesquisadores = parseInt(document.getElementById('slider-pesquisadores').value, 10);
+            const mostrarOrientadores = document.getElementById('check-orientadores').checked;
+            const mostrarAutores = document.getElementById('check-autores').checked;
+            const mostrarBancas = document.getElementById('check-bancas').checked;
+
+            // Passo 1: Calcular a centralidade (nº de conexões) de TODOS os pesquisadores
+            const centralidadeMap = new Map();
+            const todasArestas = [];
+            trabalhos.forEach(trabalho => {
+                const autor = trabalho.autorNormalizado;
+                const orientador = trabalho.orientadorNormalizado;
+                const banca = trabalho.bancaNormalizada || [];
+                const participantes = new Set([autor, orientador, ...banca].filter(p => p));
+                
+                participantes.forEach(p1 => {
+                    participantes.forEach(p2 => {
+                        if (p1 < p2) { // Evita duplicatas e auto-loops
+                            centralidadeMap.set(p1, (centralidadeMap.get(p1) || 0) + 1);
+                            centralidadeMap.set(p2, (centralidadeMap.get(p2) || 0) + 1);
+                            todasArestas.push({ from: p1, to: p2 });
+                        }
+                    });
+                });
+            });
+
+            // Passo 2: Filtrar os pesquisadores mais centrais
+            const topPesquisadores = new Set(
+                Array.from(centralidadeMap.entries())
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, numPesquisadores)
+                    .map(item => item[0])
+            );
+
+            // Passo 3: Construir os nós e arestas finais para a visualização
             const nodesMap = new Map();
             const edges = [];
 
-            // Função auxiliar para adicionar ou atualizar um nó no mapa
-            function addOrUpdateNode(name, group, title) {
-                if (!name || name.trim() === '') return;
-                if (!nodesMap.has(name)) {
-                    nodesMap.set(name, { id: name, label: name, group: group, value: 1, title: title });
-                } else {
-                    const node = nodesMap.get(name);
-                    node.value++; // Aumenta o valor (tamanho) para cada nova conexão
-                }
-            }
-            
-            // Passo 1: Processar todos os trabalhos para criar nós e arestas
             trabalhos.forEach(trabalho => {
                 const autor = trabalho.autorNormalizado;
                 const orientador = trabalho.orientadorNormalizado;
                 const banca = trabalho.bancaNormalizada || [];
 
-                // Adiciona nós
-                addOrUpdateNode(autor, 'Autor', 'Autor(a) do Trabalho');
-                addOrUpdateNode(orientador, 'Orientador', 'Orientador(a)');
-                banca.forEach(membro => addOrUpdateNode(membro, 'Banca', 'Membro de Banca'));
-
-                // Adiciona arestas (conexões)
-                // 1. Conexão entre Autor e Orientador
-                if (autor && orientador) {
-                    edges.push({ from: autor, to: orientador, title: 'Orientação' });
-                }
-                // 2. Conexão entre Orientador e Membros da Banca
-                banca.forEach(membro => {
-                    if (orientador && membro && orientador !== membro) {
-                        edges.push({ from: orientador, to: membro, title: 'Participação em Banca' });
+                // Adiciona Nós (se estiverem no top e seu tipo estiver checado)
+                const addNode = (nome, tipo) => {
+                    if (nome && topPesquisadores.has(nome) && !nodesMap.has(nome)) {
+                        nodesMap.set(nome, { id: nome, label: nome, group: tipo, value: centralidadeMap.get(nome) });
                     }
-                });
+                };
+
+                if (mostrarOrientadores) addNode(orientador, 'Orientador');
+                if (mostrarAutores) addNode(autor, 'Autor');
+                if (mostrarBancas) banca.forEach(membro => addNode(membro, 'Banca'));
             });
 
-            // Passo 2: Converter o mapa de nós para um array
-            const nodes = Array.from(nodesMap.values());
-
-            // Passo 3: Renderizar as métricas
-            const containerMetricas = document.getElementById('metricas-rede');
-            const top5Conectados = nodes.sort((a, b) => b.value - a.value).slice(0, 5);
+            // Adiciona Arestas (apenas se ambos os nós da aresta estiverem visíveis)
+            todasArestas.forEach(aresta => {
+                if (nodesMap.has(aresta.from) && nodesMap.has(aresta.to)) {
+                    edges.push(aresta);
+                }
+            });
             
-            containerMetricas.innerHTML = `
-                <div>
-                    <h4 class="font-semibold text-gray-800">Pesquisadores Mais Centrais</h4>
-                    <ul class="list-decimal list-inside mt-2 text-sm text-gray-700">
-                        ${top5Conectados.map(node => `<li>${node.label} (${node.value} conexões)</li>`).join('')}
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-semibold text-gray-800">Estatísticas Gerais</h4>
-                    <p class="text-sm text-gray-700 mt-2">Total de Pesquisadores (Nós): <span class="font-bold">${nodes.length}</span></p>
-                    <p class="text-sm text-gray-700">Total de Colaborações (Arestas): <span class="font-bold">${edges.length}</span></p>
-                </div>
-            `;
+            const nodes = Array.from(nodesMap.values());
+            if (nodes.length === 0) {
+                container.innerHTML = `<div class="flex items-center justify-center h-full"><p class="text-center text-gray-600 p-8">Nenhuma rede encontrada para os filtros selecionados. Tente aumentar o número de pesquisadores.</p></div>`;
+                return;
+            }
 
+            // Renderiza as métricas dos mais centrais (que estão visíveis)
+            containerMetricas.innerHTML = `
+                <ul class="list-decimal list-inside">
+                    ${nodes.sort((a, b) => b.value - a.value).slice(0, 10).map(n => `<li>${n.label} (${n.value} conexões)</li>`).join('')}
+                </ul>`;
 
             // Passo 4: Configurar e renderizar o grafo
-            const container = document.getElementById('rede-colaboracao-container');
             const data = { nodes, edges };
             const options = {
                 nodes: {
@@ -2145,7 +2344,185 @@
                 }
             };
             
-            new vis.Network(container, data, options);
+            if (redeNetworkInstance) redeNetworkInstance.destroy();
+            redeNetworkInstance = new vis.Network(container, data, options);
+        }
+
+        function configurarControlesRedeColaboracao() {
+            const sliderPesquisadores = document.getElementById('slider-pesquisadores');
+            const valorSliderPesquisadores = document.getElementById('valor-slider-pesquisadores');
+            const btnRenderRede = document.getElementById('btn-render-rede');
+            const placeholder = document.getElementById('rede-colaboracao-placeholder');
+            const wrapper = document.getElementById('rede-colaboracao-wrapper');
+
+            // Listener para o slider
+            sliderPesquisadores.addEventListener('input', () => {
+                valorSliderPesquisadores.textContent = `${sliderPesquisadores.value} pesquisadores`;
+            });
+
+            // Listener para o botão de GERAR
+            btnRenderRede.addEventListener('click', () => {
+                placeholder.classList.add('hidden');
+                wrapper.classList.remove('hidden');
+                const container = document.getElementById('rede-colaboracao-container');
+                container.innerHTML = `<div class="flex items-center justify-center h-full"><p class="text-gray-600">Renderizando... por favor, aguarde.</p></div>`;
+                
+                setTimeout(() => {
+                    renderizarRedeColaboracao(filteredTrabalhos);
+                    
+                    document.getElementById('btn-fechar-rede').addEventListener('click', () => {
+                        if (redeNetworkInstance) {
+                            redeNetworkInstance.destroy();
+                            redeNetworkInstance = null;
+                        }
+                        wrapper.classList.add('hidden');
+                        placeholder.classList.remove('hidden');
+                    }, { once: true });
+                }, 50);
+            });
+        }
+
+        /**
+         * Renderiza um grafo de coocorrência de temas (descritores).
+         */
+        function renderizarMapaDaCiencia(trabalhos) {
+            const container = document.getElementById('mapa-ciencia-container');
+            const placeholder = document.getElementById('mapa-ciencia-placeholder');
+            const containerMetricas = document.getElementById('metricas-mapa-ciencia');
+
+            // Mostra o placeholder e esconde o container do gráfico
+            container.innerHTML = '';
+            container.classList.add('hidden');
+            placeholder.classList.remove('hidden');
+            placeholder.innerHTML = `<p class="text-center text-gray-600">Renderizando... por favor, aguarde.</p>`;
+            
+            // Lê os valores dos sliders
+            const numTemas = parseInt(document.getElementById('slider-temas').value, 10);
+            const minConexoes = parseInt(document.getElementById('slider-conexoes').value, 10);
+
+            const nodesMap = new Map();
+            const edgesMap = new Map();
+
+            // Processa os trabalhos para obter todas as frequências e coocorrências
+            trabalhos.forEach(trabalho => {
+                const temas = trabalho.descriptors;
+                if (!temas || temas.length < 2) return;
+                temas.forEach(tema => {
+                    nodesMap.set(tema, (nodesMap.get(tema) || 0) + 1);
+                });
+                for (let i = 0; i < temas.length; i++) {
+                    for (let j = i + 1; j < temas.length; j++) {
+                        const par = [temas[i], temas[j]].sort();
+                        const chave = par.join('|');
+                        edgesMap.set(chave, (edgesMap.get(chave) || 0) + 1);
+                    }
+                }
+            });
+
+            // >>> AQUI ESTÁ A LÓGICA DE FILTRAGEM <<<
+            // 1. Filtra os temas mais frequentes (Nós)
+            const topTemas = Array.from(nodesMap.entries())
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, numTemas)
+                .map(item => item[0]);
+            const topTemasSet = new Set(topTemas);
+
+            // 2. Filtra as conexões mais fortes (Arestas) que conectam os temas filtrados
+            const arestasFiltradas = Array.from(edgesMap.entries())
+                .filter(([chave, peso]) => {
+                    const [tema1, tema2] = chave.split('|');
+                    return peso >= minConexoes && topTemasSet.has(tema1) && topTemasSet.has(tema2);
+                });
+
+            if (topTemas.length === 0 || arestasFiltradas.length === 0) {
+                placeholder.innerHTML = `<p class="text-center text-gray-600">Nenhum resultado encontrado para os filtros selecionados. Tente diminuir a força da conexão ou aumentar o número de temas.</p>`;
+                containerMetricas.innerHTML = '';
+                return;
+            }
+
+            // Converte os dados filtrados para o formato do Vis.js
+            const nodes = topTemas.map(tema => ({
+                id: tema,
+                label: tema,
+                value: nodesMap.get(tema),
+                title: `${tema} (${nodesMap.get(tema)} trabalhos)`
+            }));
+
+            const edges = arestasFiltradas.map(([chave, peso]) => ({
+                from: chave.split('|')[0],
+                to: chave.split('|')[1],
+                value: peso,
+                title: `Coocorrências: ${peso}`
+            }));
+
+            // Renderiza as métricas
+            containerMetricas.innerHTML = `
+                <ul class="list-decimal list-inside">
+                    ${arestasFiltradas.sort((a, b) => b[1] - a[1]).slice(0, 10).map(([chave, peso]) => `<li>${chave.replace(/\|/g, ' & ')} (${peso} vezes)</li>`).join('')}
+                </ul>`;
+
+            // Configura e renderiza o grafo
+            placeholder.classList.add('hidden');
+            container.classList.remove('hidden');
+            const data = { nodes, edges };
+            const options = {
+                nodes: {
+                    shape: 'box',
+                    font: { size: 14, color: '#ffffff' },
+                    color: {
+                        background: '#1e3a8a',
+                        border: '#1d4ed8',
+                        highlight: { background: '#ef4444', border: '#b91c1c' },
+                        hover: { background: '#3b82f6', border: '#2563eb' }
+                    },
+                    margin: 10
+                },
+                edges: {
+                    width: 0.5,
+                    color: { color: '#cbd5e1', highlight: '#ef4444', hover: '#94a3b8' },
+                    smooth: { type: 'continuous' }
+                },
+                physics: {
+                    barnesHut: {
+                        gravitationalConstant: -10000,
+                        springConstant: 0.01,
+                        centralGravity: 0.1
+                    },
+                    minVelocity: 0.75
+                },
+                interaction: {
+                    hover: true,
+                    tooltipDelay: 200
+                }
+            };
+            
+            if (mapaNetworkInstance) mapaNetworkInstance.destroy();
+            mapaNetworkInstance = new vis.Network(container, data, options);
+        }
+
+        // Handler para o botão de renderização do mapa
+        function configurarControlesMapaCiencia() {
+            const sliderTemas = document.getElementById('slider-temas');
+            const valorSliderTemas = document.getElementById('valor-slider-temas');
+            const sliderConexoes = document.getElementById('slider-conexoes');
+            const valorSliderConexoes = document.getElementById('valor-slider-conexoes');
+            const btnRenderMapa = document.getElementById('btn-render-mapa');
+
+            // Atualiza o texto ao mover o slider de temas
+            sliderTemas.addEventListener('input', () => {
+                valorSliderTemas.textContent = `${sliderTemas.value} temas`;
+            });
+
+            // Atualiza o texto ao mover o slider de conexões
+            sliderConexoes.addEventListener('input', () => {
+                const valor = sliderConexoes.value;
+                valorSliderConexoes.textContent = `${valor} coocorrências`;
+            });
+
+            // O botão agora chama a função de renderização
+            btnRenderMapa.addEventListener('click', () => {
+                renderizarMapaDaCiencia(filteredTrabalhos);
+            });
         }
 
         /**
@@ -2473,6 +2850,80 @@
             });
         }
 
+        /**
+         * Renderiza os gráficos de indicadores infométricos.
+         * @param {Array} trabalhos - O array de trabalhos (filtrado ou completo).
+         */
+        function renderizarIndicadoresInfometricos(trabalhos) {
+            // Destrói instâncias anteriores dos gráficos para evitar sobreposição
+            if (graficoTimeToOnline) graficoTimeToOnline.destroy();
+            if (graficoLicencas) graficoLicencas.destroy();
+
+            // --- Lógica para o Gráfico Time-to-Online ---
+            const timeDiffs = {
+                'Mesmo ano': 0, '1 ano depois': 0, '2 anos depois': 0, '3+ anos depois': 0
+            };
+            trabalhos.forEach(trabalho => {
+                const anoPublicacao = parseInt(trabalho.date_issued, 10);
+                if (trabalho.date_available && !isNaN(anoPublicacao)) {
+                    const anoDisponivel = new Date(trabalho.date_available).getFullYear();
+                    if (!isNaN(anoDisponivel)) {
+                        const diff = anoDisponivel - anoPublicacao;
+                        if (diff <= 0) timeDiffs['Mesmo ano']++; // Inclui casos de data de defesa no fim do ano
+                        else if (diff === 1) timeDiffs['1 ano depois']++;
+                        else if (diff === 2) timeDiffs['2 anos depois']++;
+                        else if (diff >= 3) timeDiffs['3+ anos depois']++;
+                    }
+                }
+            });
+
+            const ctxTimeToOnline = document.getElementById('grafico-time-to-online').getContext('2d');
+            graficoTimeToOnline = new Chart(ctxTimeToOnline, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(timeDiffs),
+                    datasets: [{
+                        label: 'Nº de Trabalhos',
+                        data: Object.values(timeDiffs),
+                        backgroundColor: [
+                            'rgba(54, 162, 235, 0.6)',
+                            'rgba(255, 206, 86, 0.6)',
+                            'rgba(255, 159, 64, 0.6)',
+                            'rgba(255, 99, 132, 0.6)'
+                        ],
+                        borderColor: [
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(255, 159, 64, 1)',
+                            'rgba(255, 99, 132, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+
+            // --- Lógica para o Gráfico de Licenças ---
+            const licenseCounts = new Map();
+            trabalhos.forEach(trabalho => {
+                const license = trabalho.rights_license || 'Não informada';
+                licenseCounts.set(license, (licenseCounts.get(license) || 0) + 1);
+            });
+
+            const ctxLicencas = document.getElementById('grafico-licencas').getContext('2d');
+            graficoLicencas = new Chart(ctxLicencas, {
+                type: 'pie',
+                data: {
+                    labels: Array.from(licenseCounts.keys()),
+                    datasets: [{
+                        data: Array.from(licenseCounts.values()),
+                        backgroundColor: ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#6b7280'],
+                        hoverOffset: 4
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } } }
+            });
+        }
 
         // --- LÓGICA PARA O BANNER DE CONSENTIMENTO DE COOKIES ---
         function setupCookieConsent() {
