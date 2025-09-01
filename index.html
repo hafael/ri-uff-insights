@@ -71,6 +71,114 @@
         }
     </style>
     <style>
+        /* --- Layout Desktop para as Novas Tabelas --- */
+        /* Garante que os containers de estatísticas se expandam como células de tabela */
+        .stats-cell {
+            display: contents;
+        }
+        .stats-grid {
+            display: contents;
+        }
+        .stat-item {
+            display: table-cell; /* Faz cada item se comportar como uma célula <td> */
+            padding: 1rem 1.5rem;
+            vertical-align: middle;
+        }
+        .person-name-cell {
+            padding: 1rem 1.5rem;
+            vertical-align: middle;
+        }
+        /* Esconde os rótulos no desktop, mostrando apenas os valores */
+        .stat-label { display: none; }
+        .stat-value-text { display: table-cell; }
+    
+        /* --- Layout Mobile para as Novas Tabelas (o Card Compacto) --- */
+        @media screen and (max-width: 768px) {
+            .compact-card-table thead {
+                display: none; /* Esconde o cabeçalho original */
+            }
+    
+            /* A linha da tabela vira o card */
+            .compact-card-table tr {
+                display: block;
+                border: 1px solid #e5e7eb;
+                border-radius: 0.75rem;
+                margin-bottom: 1rem;
+                box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            }
+    
+            /* Ambas as células <td> agora se empilham verticalmente */
+            .compact-card-table td {
+                display: block;
+                padding: 0;
+                width: 100%;
+            }
+    
+            /* O nome da pessoa vira o cabeçalho do card */
+            .person-name {
+                display: block;
+                padding: 1rem;
+                font-size: 1.125rem;
+                font-weight: 600;
+                border-bottom: 1px solid #e5e7eb;
+                word-break: break-word; /* Resolve o problema do nome cortado */
+            }
+    
+            /* O container de estatísticas vira uma grade */
+            .stats-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr); /* Grade com 3 colunas */
+                gap: 1px;
+                background-color: #e5e7eb; /* Cor para as linhas da grade */
+                overflow: hidden;
+                border-bottom-left-radius: 0.75rem;
+                border-bottom-right-radius: 0.75rem;
+            }
+            .stats-grid-autores {
+                 grid-template-columns: repeat(2, 1fr); /* Grade com 2 colunas para autores */
+            }
+    
+            /* Cada item de estatística */
+            .stat-item {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                padding: 0.75rem 0.5rem;
+                background-color: #fff;
+                text-align: center;
+            }
+    
+            /* Ocupa a linha inteira na grade (para a "Evolução Acadêmica") */
+            .stat-item-full {
+                grid-column: 1 / -1;
+            }
+            
+            /* Mostra os rótulos no mobile */
+            .stat-label {
+                display: block;
+                font-size: 0.75rem;
+                color: #6b7280;
+                margin-bottom: 0.25rem;
+                font-weight: 500;
+            }
+    
+            /* Estilo para os valores numéricos */
+            .stat-value {
+                font-size: 1.25rem;
+                font-weight: 700;
+                color: #1e3a8a;
+            }
+    
+            /* Estilo para os valores em texto */
+            .stat-value-text {
+                font-size: 0.875rem;
+                color: #374151;
+                font-weight: 500;
+            }
+        }
+    </style>
+    <style>
         /* Estilos para a animação do banner de cookies */
         #cookie-consent-banner.show {
             transform: translateY(0);
@@ -388,11 +496,11 @@
                     <a href="#dados-gerais" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Dados Gerais</a>
                     <a href="#trabalhos" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Trabalhos</a>
                     <a href="#indice-orientadores" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Índices</a>
-                    <a href="#mapa-tematico" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Mapa Temático</a>
+                    <a href="#mapa-tematico" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Temas</a>
                     <a href="#nuvem-palavras" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Nuvem</a>
                     <a href="#rede-colaboracao-secao" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Redes</a>
-                    <a href="#mapa-ciencia-secao" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Mapa da Ciência</a> 
-                    <a href="#temas-evolucao-secao" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Temas</a>
+                    <a href="#mapa-ciencia-secao" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Ciência</a> 
+                    <a href="#temas-evolucao-secao" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Evolução<a>
                     <a href="#jornada-autor-secao" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Jornada</a>
                     <a href="#infometricos-secao" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Infometria</a>
                     
@@ -419,16 +527,16 @@
 
             <h2 class="text-xl font-bold text-blue-700 mb-8">Navegação</h2>
             <div class="flex flex-col space-y-4">
-                <a href="#dados-gerais" class="mobile-menu-link text-2xl text-gray-700 hover:text-blue-600">Dados Gerais</a>
-                <a href="#trabalhos" class="mobile-menu-link text-2xl text-gray-700 hover:text-blue-600">Lista de Trabalhos</a>
-                <a href="#indice-orientadores" class="mobile-menu-link text-2xl text-gray-700 hover:text-blue-600">Índices</a>
-                <a href="#mapa-tematico" class="mobile-menu-link text-2xl text-gray-700 hover:text-blue-600">Mapa Temático</a>
-                <a href="#nuvem-palavras" class="mobile-menu-link text-2xl text-gray-700 hover:text-blue-600">Nuvem de Palavras</a>
-                <a href="#rede-colaboracao-secao" class="mobile-menu-link text-2xl text-gray-700 hover:text-blue-600">Rede de Colaboração</a>
-                <a href="#mapa-ciencia-secao" class="mobile-menu-link text-2xl text-gray-700 hover:text-blue-600">Mapa da Ciência</a>
-                <a href="#temas-evolucao-secao" class="mobile-menu-link text-2xl text-gray-700 hover:text-blue-600">Evolução Temática</a>
-                <a href="#jornada-autor-secao" class="mobile-menu-link text-2xl text-gray-700 hover:text-blue-600">Jornada do Autor</a>
-                <a href="#infometricos-secao" class="mobile-menu-link text-2xl text-gray-700 hover:text-blue-600">Infometria</a>
+                <a href="#dados-gerais" class="mobile-menu-link text-xl text-gray-700 hover:text-blue-600">Dados Gerais</a>
+                <a href="#trabalhos" class="mobile-menu-link text-xl text-gray-700 hover:text-blue-600">Lista de Trabalhos</a>
+                <a href="#indice-orientadores" class="mobile-menu-link text-xl text-gray-700 hover:text-blue-600">Índices (Autor e Orientador)</a>
+                <a href="#mapa-tematico" class="mobile-menu-link text-xl text-gray-700 hover:text-blue-600">Mapa Temático (Temas e Assuntos)</a>
+                <a href="#nuvem-palavras" class="mobile-menu-link text-xl text-gray-700 hover:text-blue-600">Nuvem de Palavras</a>
+                <a href="#rede-colaboracao-secao" class="mobile-menu-link text-xl text-gray-700 hover:text-blue-600">Rede de Colaboração</a>
+                <a href="#mapa-ciencia-secao" class="mobile-menu-link text-xl text-gray-700 hover:text-blue-600">Mapa da Ciência</a>
+                <a href="#temas-evolucao-secao" class="mobile-menu-link text-xl text-gray-700 hover:text-blue-600">Evolução Temática</a>
+                <a href="#jornada-autor-secao" class="mobile-menu-link text-xl text-gray-700 hover:text-blue-600">Jornada do Autor</a>
+                <a href="#infometricos-secao" class="mobile-menu-link text-xl text-gray-700 hover:text-blue-600">Infometria</a>
             </div>
         </div>
     </nav>
@@ -651,7 +759,7 @@
         <!-- Índice de Orientadores -->
         <section id="indice-orientadores" class="mb-12 print-break">
             <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Índice de Orientadores</h2>
-            <div id="tabela-orientadores" class="responsive-table md:bg-white md:rounded-lg md:shadow overflow-hidden">
+            <div id="tabela-orientadores" class="compact-card-table md:bg-white md:rounded-lg md:shadow overflow-hidden">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
@@ -673,7 +781,7 @@
         <!-- Índice de Autores -->
         <section id="indice-autores" class="mb-12 print-break">
             <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Índice de Autores</h2>
-            <div id="tabela-autores" class="responsive-table md:bg-white md:rounded-lg md:shadow overflow-hidden">
+            <div id="tabela-autores" class="compact-card-table md:bg-white md:rounded-lg md:shadow overflow-hidden">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
@@ -2022,19 +2130,37 @@
 
             const renderizarLinha = ([nome, dados]) => {
                 const row = document.createElement('tr');
-                
-                // >>> MODIFICAÇÃO PRINCIPAL AQUI <<<
-                // Busca a contagem de participações no novo mapa
                 const participacoes = participacoesBancaMap.get(nome) || 0;
 
+                // AQUI ESTÁ A MUDANÇA: Geramos uma estrutura HTML mais rica
                 row.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap font-medium" data-label="Orientador">${nome}</td>
-                    <td class="px-6 py-4 whitespace-nowrap" data-label="TCCs">${dados.tcc}</td>
-                    <td class="px-6 py-4 whitespace-nowrap" data-label="Dissertações">${dados.dissertacao}</td>
-                    <td class="px-6 py-4 whitespace-nowrap" data-label="Teses">${dados.tese}</td>
-                    <td class="px-6 py-4" data-label="Participações em Bancas">${participacoes}</td>
+                    <td class="person-name-cell">
+                        <div class="person-name">${nome}</div>
+                    </td>
+                    <td class="stats-cell">
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <span class="stat-label">TCCs</span>
+                                <span class="stat-value">${dados.tcc}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Dissertações</span>
+                                <span class="stat-value">${dados.dissertacao}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Teses</span>
+                                <span class="stat-value">${dados.tese}</span>
+                            </div>
+                            <div class="stat-item col-span-3">
+                                <span class="stat-label">Participação em Bancas</span>
+                                <span class="stat-value">${participacoes}</span>
+                            </div>
+                        </div>
+                    </td>
                 `;
+
                 row.classList.add('shadow-md', 'sm:shadow-none');
+
                 return row;
             };
 
@@ -2058,21 +2184,37 @@
                 else if (dados.tcc > 0) evolucao = 'TCC';
                 else if (dados.dissertacao > 0) evolucao = 'Dissertação';
                 else if (dados.tese > 0) evolucao = 'Tese';
-
+                
+                // AQUI ESTÁ A MUDANÇA: Geramos uma estrutura HTML mais rica
                 row.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap font-medium" data-label="Autor">${nome}</td>
-                    <td class="px-6 py-4 whitespace-nowrap" data-label="TCCs">${dados.tcc}</td>
-                    <td class="px-6 py-4 whitespace-nowrap" data-label="Dissertações">${dados.dissertacao}</td>
-                    <td class="px-6 py-4 whitespace-nowrap" data-label="Teses">${dados.tese}</td>
-                    <td class="px-6 py-4" data-label="Evolução Acadêmica">${evolucao}</td>
+                    <td class="person-name-cell">
+                        <div class="person-name">${nome}</div>
+                    </td>
+                    <td class="stats-cell">
+                        <div class="stats-grid stats-grid-autores">
+                            <div class="stat-item">
+                                <span class="stat-label">TCCs</span>
+                                <span class="stat-value">${dados.tcc}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Dissertações</span>
+                                <span class="stat-value">${dados.dissertacao}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Teses</span>
+                                <span class="stat-value">${dados.tese}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Evolução Acadêmica</span>
+                                <span class="stat-value-text">${evolucao || 'N/A'}</span>
+                            </div>
+                        </div>
+                    </td>
                 `;
-
-                //add class shadow-md to row element
                 row.classList.add('shadow-md', 'sm:shadow-none');
-
                 return row;
             };
-
+            
             gerenciarPaginacaoTabela(corpoTabela, autoresArray, containerBotao, renderizarLinha, "autores");
         }
 
