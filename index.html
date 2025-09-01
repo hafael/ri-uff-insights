@@ -44,6 +44,24 @@
         }
     </style>
     <style>
+        /* Estilo para a NAV quando o menu mobile estiver aberto */
+        #main-nav.menu-aberto {
+            position: fixed; /* Ocupa a tela por cima de tudo */
+            inset: 0; /* Equivalente a top, right, bottom, left = 0 */
+            height: 100vh; /* Garante 100% da altura da tela */
+            overflow-y: auto; /* Permite scroll se necessário */
+            background-color: white; /* Fundo branco sólido */
+        }
+        
+        /* No estado aberto, esconde o cabeçalho e mostra o conteúdo do menu */
+        #main-nav.menu-aberto .container {
+            display: none;
+        }
+        #main-nav.menu-aberto #mobile-menu {
+            display: flex;
+        }
+    </style>
+    <style>
         @media screen and (max-width: 768px) {
             .responsive-table table, 
             .responsive-table thead, 
@@ -281,6 +299,59 @@
             <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
         </svg>
     </button>
+
+    <nav id="main-nav" class="bg-white/70 backdrop-blur-lg sticky top-0 z-40 w-full border-b border-gray-200 transition-all duration-300">
+        
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex-shrink-0">
+                    <a href="#" class="text-xl font-bold text-blue-700">RI/UFF Insights</a>
+                </div>
+    
+                <div class="hidden md:flex md:items-center md:space-x-4">
+                    <a href="#dados-gerais" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Dados Gerais</a>
+                    <a href="#trabalhos" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Trabalhos</a>
+                    <a href="#indice-orientadores" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Índices</a>
+                    <a href="#mapa-tematico" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Mapa Temático</a>
+                    <a href="#nuvem-palavras" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Nuvem</a>
+                    <a href="#rede-colaboracao-secao" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Redes</a>
+                    <a href="#temas-evolucao-secao" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Temas</a>
+                    <a href="#jornada-autor-secao" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Jornada</a>
+                </div>
+    
+                <div class="md:hidden flex items-center">
+                    <button id="hamburger-btn" class="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500">
+                        <span class="sr-only">Abrir menu principal</span>
+                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                    </div>
+            </div>
+        </div>
+    
+        <div id="mobile-menu" class="hidden h-full w-full flex-col items-center justify-center p-6 text-center">
+            <button id="close-menu-btn" class="absolute top-4 right-4 p-2 text-gray-600 hover:text-gray-900">
+                <span class="sr-only">Fechar menu</span>
+                <svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+
+            <h2 class="text-xl font-bold text-blue-700 mb-8">Navegação</h2>
+            <div class="flex flex-col space-y-4">
+                <a href="#dados-gerais" class="mobile-menu-link text-2xl text-gray-700 hover:text-blue-600">Dados Gerais</a>
+                <a href="#trabalhos" class="mobile-menu-link text-2xl text-gray-700 hover:text-blue-600">Lista de Trabalhos</a>
+                <a href="#indice-orientadores" class="mobile-menu-link text-2xl text-gray-700 hover:text-blue-600">Índices</a>
+                <a href="#mapa-tematico" class="mobile-menu-link text-2xl text-gray-700 hover:text-blue-600">Mapa Temático</a>
+                <a href="#nuvem-palavras" class="mobile-menu-link text-2xl text-gray-700 hover:text-blue-600">Nuvem de Palavras</a>
+                <a href="#rede-colaboracao-secao" class="mobile-menu-link text-2xl text-gray-700 hover:text-blue-600">Rede de Colaboração</a>
+                <a href="#temas-evolucao-secao" class="mobile-menu-link text-2xl text-gray-700 hover:text-blue-600">Evolução Temática</a>
+                <a href="#jornada-autor-secao" class="mobile-menu-link text-2xl text-gray-700 hover:text-blue-600">Jornada do Autor</a>
+            </div>
+        </div>
+    </nav>
+
     <div class="container mx-auto px-4 py-8">
         <!-- Cabeçalho -->
         <header class="text-center mb-6 flex flex-col items-center">
@@ -296,7 +367,7 @@
             </button> -->
         </header>
 
-        <section class="mb-12 no-print">
+        <!-- <section class="mb-12 no-print">
             <h2 class="text-2xl font-semibold mb-6 border-b pb-3 text-blue-800">Sumário</h2>
             <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -393,7 +464,7 @@
 
                 </div>
             </div>
-        </section>
+        </section> -->
 
         <!-- Dados Gerais -->
         <section id="dados-gerais" class="mb-4 print-break">
@@ -560,7 +631,7 @@
                 
                 <div>
                     <h3 class="text-xl font-semibold mb-4 text-gray-700">Visão Geral dos Temas</h3>
-                    <div id="tabela-mapa-tematico" class="responsive-table overflow-hidden border rounded-lg">
+                    <div id="tabela-mapa-tematico" class="responsive-table overflow-hidden md:border rounded-lg">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
@@ -783,6 +854,12 @@
         let graficoEvolucaoTema = null;
         let graficoTemporalInstance = null;
         let temasMap = new Map();
+        let hamburgerBtn = null;
+        let mobileMenu = null;
+        let mobileMenuBackdrop = null;
+        let closeMenuBtn = null;
+        let mobileMenuLinks = null;
+        
 
         // --- FUNÇÃO PRINCIPAL DE CARREGAMENTO E INICIALIZAÇÃO ---
         async function iniciarAplicacao() {
@@ -821,11 +898,14 @@
                 processarDadosMapaTematico();
                 
                 // Renderizar componentes
+                preparaMenuResponsivo();
 
                 // Adicionar Event Listeners
                 configurarEventListeners();
-                // Configura os acordions
-                abrirTodosAccordions();
+                // Atrasamos a abertura dos accordions para evitar conflito de renderização com o menu
+                setTimeout(() => {
+                    abrirTodosAccordions();
+                }, 100); // Um pequeno atraso de 100ms é suficiente
                 // Primeira renderização com todos os dados
                 atualizarDashboard(trabalhosProcessados);
 
@@ -916,6 +996,30 @@
 
         // --- FUNÇÃO PARA CONFIGURAR OS EVENT LISTENERS ---
         function configurarEventListeners() {
+
+            // --- LÓGICA PARA A NOVA BARRA DE NAVEGAÇÃO ---
+            hamburgerBtn.addEventListener('click', toggleMenu);
+            closeMenuBtn.addEventListener('click', toggleMenu);
+            //mobileMenuBackdrop.addEventListener('click', toggleMenu);
+            // Fecha o menu ao clicar em um link (melhora a experiência do usuário)
+            mobileMenuLinks.forEach(link => {
+                link.addEventListener('click', toggleMenu);
+            });
+
+            // Efeito de sombra na navegação ao rolar
+            const mainNav = document.getElementById('main-nav');
+
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 10) {
+                    mainNav.classList.add('shadow-md');
+                } else {
+                    mainNav.classList.remove('shadow-md');
+                }
+            });
+
+            // --- FIM LÓGICA PARA A NOVA BARRA DE NAVEGAÇÃO ---
+
+
             const btnExportPdf = document.getElementById('btn-export-pdf');
             if (btnExportPdf) {
                 btnExportPdf.addEventListener('click', exportarParaPDF);
@@ -965,6 +1069,25 @@
             });
         }
     
+        // --- LÓGICA PARA A NOVA BARRA DE NAVEGAÇÃO ---
+        function preparaMenuResponsivo() {
+            hamburgerBtn = document.getElementById('hamburger-btn');
+            mobileMenu = document.getElementById('mobile-menu');
+            //mobileMenuBackdrop = document.getElementById('mobile-menu-backdrop');
+            closeMenuBtn = document.getElementById('close-menu-btn');
+            mobileMenuLinks = document.querySelectorAll('.mobile-menu-link');
+        }
+
+        // NOVA VERSÃO da função toggleMenu que controla a NAV principal
+        function toggleMenu() {
+            const mainNav = document.getElementById('main-nav');
+            mainNav.classList.toggle('menu-aberto');
+
+            // Controla o scroll do body para evitar rolagem da página por trás do menu
+            const isAberto = mainNav.classList.contains('menu-aberto');
+            document.body.style.overflow = isAberto ? 'hidden' : '';
+        }
+
         /**
          * Percorre todos os accordions e os coloca no estado "aberto" por padrão.
          */
@@ -1370,35 +1493,32 @@
         }
     
         // Renderizar trabalhos (VERSÃO MELHORADA)
+        // Renderizar trabalhos (VERSÃO SEM TEXTO DE CONTAGEM)
         function renderizarTrabalhos() {
             const listaTrabalhos = document.getElementById('lista-trabalhos');
-            const infoTrabalhosEl = document.getElementById('info-trabalhos'); // Pega o novo container
+            // A linha que controlava o 'infoTrabalhosEl' foi removida daqui.
             
-            // Limpa o conteúdo anterior
             listaTrabalhos.innerHTML = '';
-            infoTrabalhosEl.innerHTML = '';
 
             const totalTrabalhos = filteredTrabalhos.length;
             const startIndex = (currentPage - 1) * itemsPerPage;
             const endIndex = Math.min(startIndex + itemsPerPage, totalTrabalhos);
 
-            // Se não houver trabalhos, exibe a mensagem e encerra a função
             if (totalTrabalhos === 0) {
+                // Remove a info de trabalhos se não houver resultados
+                document.getElementById('info-trabalhos').innerHTML = '';
                 listaTrabalhos.innerHTML = `<p class="text-center text-gray-500 col-span-full">Nenhum trabalho encontrado para os filtros selecionados.</p>`;
                 return;
             }
             
-            // Adiciona a informação de contagem e intervalo
-            infoTrabalhosEl.textContent = `Exibindo de ${startIndex + 1} a ${endIndex} de um total de ${totalTrabalhos} trabalhos encontrados.`;
+            // O texto informativo não é mais definido aqui.
             
-            // Altera o container para renderizar em formato de grid responsiva
             listaTrabalhos.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-6';
 
             for (let i = startIndex; i < endIndex; i++) {
                 const trabalho = filteredTrabalhos[i];
                 const trabalhoEl = document.createElement('div');
                 
-                // Card com mais detalhes e melhor apelo visual
                 trabalhoEl.className = 'bg-white p-5 rounded-xl shadow-lg border border-gray-100 flex flex-col justify-between transition-all duration-300 hover:shadow-xl hover:border-blue-200 cursor-pointer';
                 trabalhoEl.dataset.id = trabalho.id;
                 
@@ -1434,7 +1554,7 @@
                                 <span class="truncate">${trabalho.autorNormalizado}</span>
                             </div>
                             <div class="flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283-.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
                                 <span class="font-medium mr-1">Orientador:</span>
                                 <span class="truncate">${trabalho.orientadorNormalizado || 'Não informado'}</span>
                             </div>
@@ -1456,58 +1576,97 @@
             }
         }
     
-        // Renderizar paginação
+        // Renderizar paginação (VERSÃO FINAL ADAPTATIVA)
         function renderizarPaginacao() {
-            const paginacao = document.getElementById('paginacao');
-            paginacao.innerHTML = '';
-            
-            const totalPages = Math.ceil(filteredTrabalhos.length / itemsPerPage);
+            const paginacaoContainer = document.getElementById('paginacao');
+            const infoTrabalhosEl = document.getElementById('info-trabalhos');
+            paginacaoContainer.innerHTML = '';
+            infoTrabalhosEl.innerHTML = '';
+
+            const totalTrabalhos = filteredTrabalhos.length;
+            const totalPages = Math.ceil(totalTrabalhos / itemsPerPage);
             
             if (totalPages <= 1) return;
-            
-            // Botão anterior
-            const prevButton = document.createElement('button');
-            prevButton.className = 'mx-1 px-3 py-1 rounded border' + (currentPage === 1 ? ' bg-gray-200 text-gray-400 cursor-not-allowed' : ' bg-white text-gray-700 hover:bg-gray-100');
-            prevButton.textContent = 'Anterior';
-            prevButton.disabled = currentPage === 1;
-            prevButton.addEventListener('click', () => {
-                if (currentPage > 1) {
-                    currentPage--;
-                    renderizarTrabalhos();
-                    renderizarPaginacao();
-                    window.scrollTo(0, document.getElementById('trabalhos').offsetTop);
+
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, totalTrabalhos);
+
+            // Adiciona a informação de contagem de itens
+            infoTrabalhosEl.textContent = `Exibindo ${startIndex + 1} - ${endIndex} de ${totalTrabalhos} trabalhos.`;
+            infoTrabalhosEl.className = 'text-center text-sm text-gray-600 mb-4';
+
+            const buttonWrapper = document.createElement('div');
+            buttonWrapper.className = 'flex justify-center items-center space-x-1';
+
+            const createButton = (page, content, isDisabled = false, isResponsive = false) => {
+                const element = (page !== null) ? document.createElement('button') : document.createElement('span');
+                element.innerHTML = content;
+
+                let classes = 'inline-flex items-center justify-center h-9 w-9 rounded-md text-sm font-medium transition-colors ';
+                
+                if (page !== null) { // É um botão clicável
+                    classes += isDisabled 
+                        ? 'text-gray-400 cursor-not-allowed' 
+                        : 'text-gray-700 hover:bg-gray-100';
+                    
+                    if (page === currentPage) {
+                        classes += ' bg-blue-600 text-white hover:bg-blue-700 border border-blue-600';
+                    }
+                    
+                    if (!isDisabled) {
+                        element.addEventListener('click', () => {
+                            currentPage = page;
+                            renderizarTrabalhos();
+                            renderizarPaginacao();
+                            document.getElementById('trabalhos').scrollIntoView({ behavior: 'smooth' });
+                        });
+                    }
+                } else { // É um span (elipse)
+                    classes += ' text-gray-500';
                 }
-            });
-            paginacao.appendChild(prevButton);
+
+                if (isResponsive) {
+                    classes += ' hidden sm:inline-flex'; // Oculta em telas pequenas
+                }
+
+                element.className = classes;
+                return element;
+            };
+
+            // Botões de navegação
+            buttonWrapper.appendChild(createButton(1, '«', currentPage === 1));
+            buttonWrapper.appendChild(createButton(currentPage - 1, '‹', currentPage === 1));
+
+            // Lógica para gerar os números de página
+            const pageRange = 1; // Quantos números mostrar antes/depois da página atual
+            const pagesToShow = new Set();
             
-            // Números de página
-            for (let i = 1; i <= totalPages; i++) {
-                const pageButton = document.createElement('button');
-                pageButton.className = 'mx-1 px-3 py-1 rounded border' + (i === currentPage ? ' bg-blue-600 text-white' : ' bg-white text-gray-700 hover:bg-gray-100');
-                pageButton.textContent = i;
-                pageButton.addEventListener('click', () => {
-                    currentPage = i;
-                    renderizarTrabalhos();
-                    renderizarPaginacao();
-                    window.scrollTo(0, document.getElementById('trabalhos').offsetTop);
-                });
-                paginacao.appendChild(pageButton);
+            pagesToShow.add(1);
+            pagesToShow.add(totalPages);
+
+            for (let i = currentPage - pageRange; i <= currentPage + pageRange; i++) {
+                if (i > 1 && i < totalPages) {
+                    pagesToShow.add(i);
+                }
             }
             
-            // Botão próximo
-            const nextButton = document.createElement('button');
-            nextButton.className = 'mx-1 px-3 py-1 rounded border' + (currentPage === totalPages ? ' bg-gray-200 text-gray-400 cursor-not-allowed' : ' bg-white text-gray-700 hover:bg-gray-100');
-            nextButton.textContent = 'Próximo';
-            nextButton.disabled = currentPage === totalPages;
-            nextButton.addEventListener('click', () => {
-                if (currentPage < totalPages) {
-                    currentPage++;
-                    renderizarTrabalhos();
-                    renderizarPaginacao();
-                    window.scrollTo(0, document.getElementById('trabalhos').offsetTop);
+            const sortedPages = Array.from(pagesToShow).sort((a, b) => a - b);
+            let lastPage = 0;
+
+            sortedPages.forEach(page => {
+                const isResponsiveNumber = Math.abs(page - currentPage) > 0 && page !== 1 && page !== totalPages;
+                if (lastPage !== 0 && page > lastPage + 1) {
+                    buttonWrapper.appendChild(createButton(null, '...', false, isResponsiveNumber));
                 }
+                buttonWrapper.appendChild(createButton(page, page, false, isResponsiveNumber));
+                lastPage = page;
             });
-            paginacao.appendChild(nextButton);
+
+            // Botões de navegação
+            buttonWrapper.appendChild(createButton(currentPage + 1, '›', currentPage === totalPages));
+            buttonWrapper.appendChild(createButton(totalPages, '»', currentPage === totalPages));
+
+            paginacaoContainer.appendChild(buttonWrapper);
         }
     
         // Abrir modal com detalhes do trabalho
@@ -1726,11 +1885,6 @@
                 autorEl.innerHTML = `
                     <h3 class="font-semibold text-blue-700">${nome}</h3>
                     <p class="text-sm text-gray-600">${evolucaoDetalhada}</p>
-                    <div class="mt-2 grid grid-cols-1 md:grid-cols-3 gap-2">
-                        ${dados.tcc > 0 ? `<div class="bg-blue-100 p-2 rounded"><span class="font-medium">TCCs:</span> ${dados.tcc}</div>` : ''}
-                        ${dados.dissertacao > 0 ? `<div class="bg-green-100 p-2 rounded"><span class="font-medium">Dissertações:</span> ${dados.dissertacao}</div>` : ''}
-                        ${dados.tese > 0 ? `<div class="bg-purple-100 p-2 rounded"><span class="font-medium">Teses:</span> ${dados.tese}</div>` : ''}
-                    </div>
                 `;
                 
                 listaEvolucao.appendChild(autorEl);
