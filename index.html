@@ -185,6 +185,29 @@
         }
     </style>
     <style>
+        /* Estilos para o modal e a funcionalidade de resumo expandido */
+        .modal-body-grid {
+            display: grid;
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+            gap: 1rem 2rem;
+        }
+        @media (min-width: 768px) {
+            .modal-body-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+        
+        /* Controla a visibilidade dos elementos quando o resumo está expandido */
+        #modal-trabalho.modal-abstract-expanded .hidable-on-abstract,
+        #modal-trabalho.modal-abstract-expanded #modal-actions {
+            display: none;
+        }
+
+        #modal-trabalho.modal-abstract-expanded #modal-abstract-content {
+            display: block; /* Garante que o resumo seja visível */
+        }
+    </style>
+    <style>
         @media screen and (max-width: 768px) {
             .responsive-table table, 
             .responsive-table thead, 
@@ -556,124 +579,9 @@
             </button> -->
         </header>
 
-        <!-- <section class="mb-12 no-print">
-            <h2 class="text-2xl font-semibold mb-6 border-b pb-3 text-blue-800">Sumário</h2>
-            <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <a href="#dados-gerais" class="flex flex-col items-center justify-center p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg border border-blue-200 hover:from-blue-100 hover:to-blue-200 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-md group">
-                        <div class="bg-blue-600 p-3 rounded-full mb-3 group-hover:bg-blue-700 transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                            </svg>
-                        </div>
-                        <span class="text-sm font-medium text-blue-800 text-center">Dados Gerais</span>
-                    </a>
-                    
-                    <a href="#trabalhos" class="flex flex-col items-center justify-center p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-lg border border-green-200 hover:from-green-100 hover:to-green-200 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-md group">
-                        <div class="bg-green-600 p-3 rounded-full mb-3 group-hover:bg-green-700 transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                        </div>
-                        <span class="text-sm font-medium text-green-800 text-center">Lista de Trabalhos</span>
-                    </a>
-                    
-                    <a href="#indice-orientadores" class="flex flex-col items-center justify-center p-4 bg-gradient-to-r from-purple-50 to-purple-100 rounded-lg border border-purple-200 hover:from-purple-100 hover:to-purple-200 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-md group">
-                        <div class="bg-purple-600 p-3 rounded-full mb-3 group-hover:bg-purple-700 transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                            </svg>
-                        </div>
-                        <span class="text-sm font-medium text-purple-800 text-center">Índice de Orientadores</span>
-                    </a>
-                    
-                    <a href="#indice-autores" class="flex flex-col items-center justify-center p-4 bg-gradient-to-r from-indigo-50 to-indigo-100 rounded-lg border border-indigo-200 hover:from-indigo-100 hover:to-indigo-200 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-md group">
-                        <div class="bg-indigo-600 p-3 rounded-full mb-3 group-hover:bg-indigo-700 transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                            </svg>
-                        </div>
-                        <span class="text-sm font-medium text-indigo-800 text-center">Índice de Autores</span>
-                    </a>
-                    
-                    <a href="#evolucao-academica" class="flex flex-col items-center justify-center p-4 bg-gradient-to-r from-teal-50 to-teal-100 rounded-lg border border-teal-200 hover:from-teal-100 hover:to-teal-200 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-md group">
-                        <div class="bg-teal-600 p-3 rounded-full mb-3 group-hover:bg-teal-700 transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                            </svg>
-                        </div>
-                        <span class="text-sm font-medium text-teal-800 text-center">Evolução Acadêmica</span>
-                    </a>
-                    
-                    <a href="#mapa-tematico" class="flex flex-col items-center justify-center p-4 bg-gradient-to-r from-orange-50 to-orange-100 rounded-lg border border-orange-200 hover:from-orange-100 hover:to-orange-200 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-md group">
-                        <div class="bg-orange-600 p-3 rounded-full mb-3 group-hover:bg-orange-700 transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                            </svg>
-                        </div>
-                        <span class="text-sm font-medium text-orange-800 text-center">Mapa Temático</span>
-                    </a>
-                    
-                    <a href="#nuvem-palavras" class="flex flex-col items-center justify-center p-4 bg-gradient-to-r from-pink-50 to-pink-100 rounded-lg border border-pink-200 hover:from-pink-100 hover:to-pink-200 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-md group">
-                        <div class="bg-pink-600 p-3 rounded-full mb-3 group-hover:bg-pink-700 transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                            </svg>
-                        </div>
-                        <span class="text-sm font-medium text-pink-800 text-center">Nuvem de Palavras</span>
-                    </a>
-
-                    <a href="#rede-colaboracao-secao" class="flex flex-col items-center justify-center p-4 bg-gradient-to-r from-yellow-50 to-yellow-100 rounded-lg border border-yellow-200 hover:from-yellow-100 hover:to-yellow-200 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-md group">
-                        <div class="bg-yellow-600 p-3 rounded-full mb-3 group-hover:bg-yellow-700 transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                        </div>
-                        <span class="text-sm font-medium text-yellow-800 text-center">Rede de Colaboração</span>
-                    </a>
-
-                    <a href="#temas-evolucao-secao" class="flex flex-col items-center justify-center p-4 bg-gradient-to-r from-teal-50 to-teal-100 rounded-lg border border-teal-200 hover:from-teal-100 hover:to-teal-200 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-md group">
-                        <div class="bg-teal-600 p-3 rounded-full mb-3 group-hover:bg-teal-700 transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                            </svg>
-                        </div>
-                        <span class="text-sm font-medium text-teal-800 text-center">Evolução Temática</span>
-                    </a>
-
-                    <a href="#jornada-autor-secao" class="flex flex-col items-center justify-center p-4 bg-gradient-to-r from-cyan-50 to-cyan-100 rounded-lg border border-cyan-200 hover:from-cyan-100 hover:to-cyan-200 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-md group">
-                        <div class="bg-cyan-600 p-3 rounded-full mb-3 group-hover:bg-cyan-700 transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                            </svg>
-                        </div>
-                        <span class="text-sm font-medium text-cyan-800 text-center">Jornada do Autor</span>
-                    </a>
-
-                </div>
-            </div>
-        </section> -->
-
         <!-- Dados Gerais -->
         <section id="dados-gerais" class="mb-4 print-break">
             <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Dados Gerais</h2>
-            <div class="flex justify-between items-center mb-4">
-                <div class="flex gap-2 no-print">
-                    <!-- <button id="btn-export-pdf" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        Exportar PDF
-                    </button> -->
-                    <!-- <button onclick="window.print()" class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m4 4h6a2 2 0 002-2v-4a2 2 0 00-2-2h-6a2 2 0 00-2 2v4a2 2 0 002 2z" />
-                        </svg>
-                        Imprimir
-                    </button> -->
-                </div>
-            </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="bg-white p-4 md:p-6 rounded-lg shadow-lg text-center flex flex-col items-center justify-center">
                     <div class="bg-blue-100 p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
@@ -1438,6 +1346,31 @@
             document.body.style.overflow = isAberto ? 'hidden' : '';
         }
 
+
+        /**
+         * NOVA FUNÇÃO: Normaliza o nome da licença a partir da URL ou texto completo.
+         * @param {string} licenseString A string da licença do dataset.
+         * @returns {string} O nome normalizado da licença (ex: "CC BY-SA").
+         */
+         function normalizarLicenca(licenseString) {
+            if (!licenseString) {
+                return 'Não informada';
+            }
+            // Converte para minúsculas para facilitar a busca
+            const lowerCaseLicense = licenseString.toLowerCase();
+
+            // A ordem é importante: do mais específico para o mais genérico
+            if (lowerCaseLicense.includes('by-nc-nd')) return 'CC BY-NC-ND';
+            if (lowerCaseLicense.includes('by-nc-sa')) return 'CC BY-NC-SA';
+            if (lowerCaseLicense.includes('by-nc')) return 'CC BY-NC';
+            if (lowerCaseLicense.includes('by-sa')) return 'CC BY-SA';
+            if (lowerCaseLicense.includes('by-nd')) return 'CC BY-ND';
+            if (lowerCaseLicense.includes('/by/')) return 'CC BY'; // Busca o "BY" simples em URLs
+            
+            // Se não encontrar um padrão conhecido, agrupa como "Outra"
+            return 'Outra';
+        }
+
         /**
          * Normaliza uma string para busca, removendo acentos, convertendo para minúsculas e removendo espaços excessivos.
          * @param {string} str A string a ser normalizada.
@@ -1606,9 +1539,12 @@
         function extrairAno(dateString) {
             if (!dateString) return 'Não informado';
             
-            // Tenta encontrar um ano de 4 dígitos na string
-            const anoMatch = dateString.match(/\b(19|20)\d{2}\b/);
-            return anoMatch ? anoMatch[0] : 'Não informado';
+            // Usa o 'g' no regex para encontrar TODAS as ocorrências de anos com 4 dígitos.
+            const anoMatches = dateString.match(/\b(19|20)\d{2}\b/g);
+
+            // Se encontrar múltiplos anos, o último é o correto.
+            // Se encontrar apenas um, usa esse. Se não encontrar, retorna 'Não informado'.
+            return anoMatches ? anoMatches[anoMatches.length - 1] : 'Não informado';
         }
 
         // MODIFICADA: Apenas processa os dados brutos uma vez
@@ -1617,7 +1553,10 @@
                 const autorNormalizado = normalizarNome(trabalho.author);
                 const orientadorNormalizado = normalizarNome(trabalho.advisor);
                 const bancaNormalizada = trabalho.board_members ? trabalho.board_members.map(normalizarNome) : [];
-                const ano = extrairAno(trabalho.date_issued || trabalho.date_available);
+                //const ano = extrairAno(trabalho.date_issued || trabalho.date_available);
+
+                // Prioriza o campo 'degree_date'. Se não existir, usa a lógica anterior como fallback.
+                const ano = trabalho.degree_date || extrairAno(trabalho.date_issued || trabalho.date_available);
                 
                 let tipo = 'Outro';
                 if (trabalho.collection_name.includes('TCC') || (trabalho.degree_level && trabalho.degree_level.includes('graduação'))) {
@@ -2075,73 +2014,194 @@
             paginacaoContainer.appendChild(buttonWrapper);
         }
     
-        // Abrir modal com detalhes do trabalho
-        function abrirModal(trabalho) {
+
+        /**
+         * NOVA FUNÇÃO AUXILIAR: Copia um texto para a área de transferência.
+         */
+         function copiarTextoParaClipboard(texto) {
+            // Usa a API de Clipboard para uma cópia segura
+            navigator.clipboard.writeText(texto)
+                .then(() => {
+                    alert('Referência copiada para a área de transferência!');
+                })
+                .catch(err => {
+                    console.error('Erro ao copiar referência:', err);
+                    alert('Não foi possível copiar a referência.');
+                });
+        }
+
+        /**
+         * FUNÇÃO ATUALIZADA: Reverte o agrupamento de campos, mantendo a referência integrada.
+         */
+         function abrirModal(trabalho) {
             const modal = document.getElementById('modal-trabalho');
             const modalTitulo = document.getElementById('modal-titulo');
             const modalConteudo = document.getElementById('modal-conteudo');
-            const btnUrl = document.getElementById('btn-url');
-            const btnDownload = document.getElementById('btn-download');
-            const btnCopiar = document.getElementById('btn-copiar');
-            
+            const btnVoltarTopo = document.getElementById('btn-voltar-topo');
+
+            if (btnVoltarTopo) {
+                btnVoltarTopo.style.display = 'none';
+            }
+
             modalTitulo.textContent = trabalho.title;
+
+            // Gera a referência para ser usada no corpo do modal
+            const referenciaABNT = gerarReferencia(trabalho);
             
+            // Lógica do resumo
+            let abstractContentHTML = '';
+            if (trabalho.abstract) {
+                if (trabalho.abstract.length > 300) {
+                    const truncatedAbstract = trabalho.abstract.substring(0, 300) + '...';
+                    abstractContentHTML = `
+                        <div class="resumo-content">
+                            <p class="text-justify">${truncatedAbstract}</p>
+                            <button id="toggle-abstract-btn" onclick="toggleAbstractView(this)" class="text-blue-600 font-semibold hover:underline mt-2">Leia mais...</button>
+                            <p class="text-justify hidden">${trabalho.abstract}</p>
+                        </div>
+                    `;
+                } else {
+                    abstractContentHTML = `<p class="text-justify">${trabalho.abstract}</p>`;
+                }
+            } else {
+                abstractContentHTML = '<p>Resumo não disponível.</p>';
+            }
+
+            // O HTML do modal é montado com os campos desagrupados (estado anterior)
             modalConteudo.innerHTML = `
-                <div class="space-y-4">
-                    <div>
-                        <h4 class="font-semibold">Autor</h4>
-                        <p>${trabalho.autorNormalizado}</p>
+                <div class="modal-body-grid">
+                    <div class="hidable-on-abstract">
+                        <h4 class="font-semibold text-gray-500 text-sm">Autor</h4>
+                        <p>${trabalho.autorNormalizado || 'Não informado'}</p>
                     </div>
-                    <div>
-                        <h4 class="font-semibold">Orientador</h4>
+                    <div class="hidable-on-abstract">
+                        <h4 class="font-semibold text-gray-500 text-sm">Orientador</h4>
                         <p>${trabalho.orientadorNormalizado || 'Não informado'}</p>
                     </div>
-                    <div>
-                        <h4 class="font-semibold">Ano de Defesa</h4>
-                        <p>${trabalho.ano}</p>
+                    <div class="hidable-on-abstract">
+                        <h4 class="font-semibold text-gray-500 text-sm">Tipo e Ano</h4>
+                        <p>${trabalho.tipo} de ${trabalho.ano}</p>
                     </div>
-                    <div>
-                        <h4 class="font-semibold">Tipo de Trabalho</h4>
-                        <p>${trabalho.tipo}</p>
+                    <div class="hidable-on-abstract">
+                        <h4 class="font-semibold text-gray-500 text-sm">Nível</h4>
+                        <p>${trabalho.degree_level || 'Não informado'}</p>
                     </div>
-                    <div>
-                        <h4 class="font-semibold">Palavras-chave</h4>
-                        <div class="flex flex-wrap">
+                    <div class="md:col-span-2 hidable-on-abstract">
+                        <h4 class="font-semibold text-gray-500 text-sm">Banca Examinadora</h4>
+                        <p>${trabalho.bancaNormalizada && trabalho.bancaNormalizada.length > 0 ? trabalho.bancaNormalizada.join('; ') : 'Não informado'}</p>
+                    </div>
+                    
+                    <div class="md:col-span-2 mt-4 border-t pt-4">
+                        <h4 class="font-semibold text-gray-500 text-sm mb-2">Resumo</h4>
+                        ${abstractContentHTML}
+                    </div>
+
+                    <div class="md:col-span-2 hidable-on-abstract">
+                        <h4 class="font-semibold text-gray-500 text-sm">Palavras-chave</h4>
+                        <div class="flex flex-wrap gap-1 mt-1">
                             ${trabalho.todasPalavrasChave.map(palavra => 
-                                `<span class="inline-block bg-gray-100 rounded-full px-3 py-1 text-xs font-semibold text-gray-700 mr-1 mb-1">${palavra}</span>`
+                                `<span class="inline-block bg-gray-100 rounded-full px-2 py-0.5 text-xs font-semibold text-gray-700 border">${palavra}</span>`
                             ).join('')}
                         </div>
                     </div>
-                    <div>
-                        <h4 class="font-semibold">Resumo</h4>
-                        <p class="text-justify">${trabalho.abstract || 'Resumo não disponível.'}</p>
+                     <div class="hidable-on-abstract">
+                        <h4 class="font-semibold text-gray-500 text-sm">Data de Defesa</h4>
+                        <p>${trabalho.date_issued ? new Date(trabalho.date_issued).toLocaleDateString('pt-BR') : 'Não informada'}</p>
+                    </div>
+                     <div class="hidable-on-abstract">
+                        <h4 class="font-semibold text-gray-500 text-sm">Disponível em</h4>
+                        <p>${trabalho.date_available ? new Date(trabalho.date_available).toLocaleDateString('pt-BR') : 'Não informada'}</p>
+                    </div>
+                     <div class="md:col-span-2 hidable-on-abstract">
+                        <h4 class="font-semibold text-gray-500 text-sm">Licença de Uso</h4>
+                        <p>${trabalho.rights_license || 'Não informada'}</p>
+                    </div>
+
+                    <div class="md:col-span-2 mt-4 border-t pt-4 hidable-on-abstract">
+                        <h4 class="font-semibold text-gray-500 text-sm mb-2">Referência ABNT</h4>
+                        <p class="text-sm text-gray-700 pr-2">
+                            ${referenciaABNT}
+                            <button onclick="copiarTextoParaClipboard(\`${referenciaABNT.replace(/`/g, '\\`')}\`)" class="ml-1 text-blue-600 font-semibold hover:underline text-xs align-top">[Copiar]</button>
+                        </p>
                     </div>
                 </div>
             `;
             
-            // Configurar botões de ação
-            btnUrl.onclick = () => {
-                window.open(trabalho.url, '_blank');
-            };
+            const actionButtonsContainer = document.querySelector('#modal-trabalho .flex.justify-end');
+            actionButtonsContainer.id = "modal-actions";
+            actionButtonsContainer.innerHTML = `
+                <a id="btn-ver-repo" href="${trabalho.url}" target="_blank" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                    Ver no Repositório
+                </a>
+                <a id="btn-ver-pdf" href="${trabalho.document_url || '#'}" target="_blank" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 flex items-center text-sm ${!trabalho.document_url ? 'opacity-50 cursor-not-allowed' : ''}">
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                    Ver PDF
+                </a>
+            `;
             
-            btnDownload.onclick = () => {
-                if (trabalho.document_url) {
-                    window.open(trabalho.document_url, '_blank');
-                } else {
-                    alert('URL de download não disponível.');
-                }
-            };
-            
-            btnCopiar.onclick = () => {
-                const referencia = gerarReferencia(trabalho);
-                navigator.clipboard.writeText(referencia)
-                    .then(() => alert('Referência copiada para a área de transferência!'))
-                    .catch(err => console.error('Erro ao copiar referência:', err));
-            };
-            
+            document.body.classList.add('overflow-hidden');
             modal.classList.remove('hidden');
         }
     
+        /**
+         * NOVA FUNÇÃO AUXILIAR: Encontra um trabalho pelo ID e abre o modal.
+         */
+         function abrirModalPorId(trabalhoId) {
+            // A variável 'trabalhosProcessados' deve estar acessível globalmente
+            const trabalho = trabalhosProcessados.find(t => t.id === trabalhoId);
+            if (trabalho) {
+                abrirModal(trabalho);
+            } else {
+                console.error('Trabalho não encontrado com o ID:', trabalhoId);
+                alert('Ocorreu um erro ao tentar abrir os detalhes do trabalho.');
+            }
+        }
+
+        // Fechar modal
+        /**
+         * FUNÇÃO ATUALIZADA: Fecha o modal e restaura o estado da página.
+         */
+         function fecharModal() {
+            const modal = document.getElementById('modal-trabalho');
+            const btnVoltarTopo = document.getElementById('btn-voltar-topo');
+
+            // Requisito 5: Restaura a visibilidade do botão "Voltar ao Topo"
+             if (btnVoltarTopo) {
+                // Remove o estilo inline para que o CSS de scroll volte a controlá-lo
+                btnVoltarTopo.style.display = ''; 
+            }
+            
+            // Garante que a visualização do resumo seja resetada ao fechar
+            modal.classList.remove('modal-abstract-expanded');
+            
+            document.body.classList.remove('overflow-hidden'); // Libera o scroll da página
+            modal.classList.add('hidden');
+        }
+
+        /**
+         * FUNÇÃO ATUALIZADA: Alterna a visualização focada no resumo dentro do modal.
+         */
+         function toggleAbstractView(button) {
+            const modal = document.getElementById('modal-trabalho');
+            const isExpanded = modal.classList.toggle('modal-abstract-expanded');
+            
+            // Encontra os elementos do resumo dentro do contexto do botão
+            const resumoContainer = button.parentElement;
+            const resumoTruncado = resumoContainer.querySelector('p:first-of-type');
+            const resumoCompleto = resumoContainer.querySelector('p:last-of-type');
+
+            if (isExpanded) {
+                button.textContent = 'Voltar';
+                resumoTruncado.classList.add('hidden');
+                resumoCompleto.classList.remove('hidden');
+            } else {
+                button.textContent = 'Leia mais...';
+                resumoTruncado.classList.remove('hidden');
+                resumoCompleto.classList.add('hidden');
+            }
+        }
+
         // Gerar referência bibliográfica
         function gerarReferencia(trabalho) {
             const autor = trabalho.autorNormalizado;
@@ -2164,34 +2224,29 @@
             return referencia;
         }
     
-        // Fechar modal
-        function fecharModal() {
-            document.getElementById('modal-trabalho').classList.add('hidden');
-        }
-    
         // Resetar visualizações de grafos
         function resetarVisualizacoesDeGrafos() {
             // --- Reseta a Rede de Colaboração ---
-            // Destrói a instância do gráfico anterior para liberar memória
+            const redeWrapper = document.getElementById('rede-colaboracao-wrapper');
+            const redePlaceholder = document.getElementById('rede-colaboracao-placeholder');
+
             if (redeNetworkInstance) {
                 redeNetworkInstance.destroy();
                 redeNetworkInstance = null;
             }
-            // Esconde o wrapper que contém o gráfico e o botão "Fechar"
-            document.getElementById('rede-colaboracao-wrapper').classList.add('hidden');
-            // Mostra o placeholder com a mensagem inicial
-            document.getElementById('rede-colaboracao-placeholder').classList.remove('hidden');
+            if (redeWrapper) redeWrapper.classList.add('hidden');
+            if (redePlaceholder) redePlaceholder.classList.remove('hidden');
 
-            // --- Reseta o Mapa da Ciência ---
-            // Destrói a instância do gráfico anterior para liberar memória
+            // --- Reseta o Mapa da Ciência (CORRIGIDO) ---
+            const mapaContainer = document.getElementById('mapa-ciencia-container'); // <<-- Alterado de 'mapa-ciencia-wrapper'
+            const mapaPlaceholder = document.getElementById('mapa-ciencia-placeholder');
+
             if (mapaNetworkInstance) {
                 mapaNetworkInstance.destroy();
                 mapaNetworkInstance = null;
             }
-            // Esconde o wrapper que contém o gráfico
-            document.getElementById('mapa-ciencia-wrapper').classList.add('hidden');
-            // Mostra o placeholder com a mensagem inicial
-            document.getElementById('mapa-ciencia-placeholder').classList.remove('hidden');
+            if (mapaContainer) mapaContainer.classList.add('hidden'); // <<-- Corrigido e com verificação
+            if (mapaPlaceholder) mapaPlaceholder.classList.remove('hidden');
         }
 
         /**
@@ -2340,7 +2395,11 @@
         }
 
         // Renderizar evolução acadêmica
-        function renderizarEvolucaoAcademica() {
+        /**
+         * FUNÇÃO ATUALIZADA: Ordena a evolução acadêmica pelo nível do trabalho,
+         * garantindo a ordem correta da progressão (TCC -> Dissertação -> Tese).
+         */
+         function renderizarEvolucaoAcademica() {
             const listaEvolucao = document.getElementById('lista-evolucao');
             listaEvolucao.innerHTML = '';
             
@@ -2349,33 +2408,51 @@
                     (dados.tcc > 0 && dados.dissertacao > 0) || 
                     (dados.dissertacao > 0 && dados.tese > 0) || 
                     (dados.tcc > 0 && dados.tese > 0)
-                );
+                )
+                .sort((a, b) => a[0].localeCompare(b[0]));
             
             if (autoresComEvolucao.length === 0) {
-                listaEvolucao.innerHTML = '<p class="text-gray-500">Nenhum autor com evolução acadêmica detectada.</p>';
+                listaEvolucao.innerHTML = '<p class="text-gray-500 col-span-full">Nenhum autor com evolução acadêmica foi encontrado para os filtros selecionados.</p>';
                 return;
             }
             
+            // Define o peso de cada tipo de trabalho para a ordenação
+            const tipoPeso = { 'TCC': 1, 'Dissertação': 2, 'Tese': 3, 'Outro': 4 };
+
             autoresComEvolucao.forEach(([nome, dados]) => {
                 const autorEl = document.createElement('div');
-                autorEl.className = 'bg-gray-50 p-4 rounded';
+                autorEl.className = 'bg-gray-50 p-4 rounded-lg border';
                 
-                let evolucaoDetalhada = '';
-                const trabalhosAutor = trabalhosProcessados.filter(t => t.autorNormalizado === nome);
+                // AQUI ESTÁ A CORREÇÃO: Ordena primeiro pelo peso do tipo, depois pelo ano
+                const trabalhosAutor = trabalhosProcessados
+                    .filter(t => t.autorNormalizado === nome)
+                    .sort((a, b) => {
+                        const pesoA = tipoPeso[a.tipo] || 99;
+                        const pesoB = tipoPeso[b.tipo] || 99;
+                        
+                        // Se os níveis forem diferentes, ordena pelo nível
+                        if (pesoA !== pesoB) {
+                            return pesoA - pesoB;
+                        }
+                        
+                        // Se os níveis forem iguais, ordena pelo ano
+                        return (a.ano || 0) - (b.ano || 0); 
+                    });
                 
-                if (dados.tcc > 0 && dados.dissertacao > 0 && dados.tese > 0) {
-                    evolucaoDetalhada = 'Progressão completa: TCC → Dissertação → Tese';
-                } else if (dados.tcc > 0 && dados.dissertacao > 0) {
-                    evolucaoDetalhada = 'Progressão: TCC → Dissertação';
-                } else if (dados.dissertacao > 0 && dados.tese > 0) {
-                    evolucaoDetalhada = 'Progressão: Dissertação → Tese';
-                } else if (dados.tcc > 0 && dados.tese > 0) {
-                    evolucaoDetalhada = 'Progressão: TCC → Tese';
-                }
+                const trabalhosHTML = trabalhosAutor.map(trabalho => {
+                    return `
+                        <div class="mt-2 pl-4 border-l-2 border-gray-300">
+                            <span class="text-xs font-bold text-gray-600">${trabalho.tipo} (${trabalho.ano})</span>
+                            <button onclick="abrirModalPorId('${trabalho.id}')" class="block w-full text-left text-blue-700 hover:underline text-sm font-medium leading-tight">
+                                ${trabalho.title}
+                            </button>
+                        </div>
+                    `;
+                }).join('');
                 
                 autorEl.innerHTML = `
-                    <h3 class="font-semibold text-blue-700">${nome}</h3>
-                    <p class="text-sm text-gray-600">${evolucaoDetalhada}</p>
+                    <h3 class="font-semibold text-blue-800 text-lg">${nome}</h3>
+                    <div class="mt-2">${trabalhosHTML}</div>
                 `;
                 
                 listaEvolucao.appendChild(autorEl);
@@ -3055,20 +3132,24 @@
         }
 
         /**
-         * Renderiza os controles e a lógica para a análise da jornada do autor, usando um <select>.
+         * FUNÇÃO ATUALIZADA: Análise da Jornada do Autor
+         * Os cards de trabalho agora são clicáveis e abrem o modal de detalhes.
          */
-        function renderizarJornadaAutor() {
+         function renderizarJornadaAutor() {
             const selectAutor = document.getElementById('filtro-autor-jornada');
             const containerResultado = document.getElementById('jornada-autor-resultado');
 
             // Popula o <select> com os nomes dos autores, ordenados alfabeticamente
-            const nomesAutores = Array.from(autoresMap.keys()).sort();
-            nomesAutores.forEach(nome => {
-                const option = document.createElement('option');
-                option.value = nome;
-                option.textContent = nome;
-                selectAutor.appendChild(option);
-            });
+            // (Esta parte da lógica é otimizada para não repopular a cada chamada)
+            if (selectAutor.options.length <= 1) {
+                const nomesAutores = Array.from(autoresMap.keys()).sort();
+                nomesAutores.forEach(nome => {
+                    const option = document.createElement('option');
+                    option.value = nome;
+                    option.textContent = nome;
+                    selectAutor.appendChild(option);
+                });
+            }
 
             // Função para exibir os detalhes de um autor selecionado
             function exibirDetalhesAutor(nomeAutor) {
@@ -3079,7 +3160,7 @@
 
                 const trabalhosDoAutor = trabalhosProcessados
                     .filter(t => t.autorNormalizado === nomeAutor)
-                    .sort((a, b) => a.ano - b.ano); // Ordena do mais antigo para o mais novo
+                    .sort((a, b) => (a.ano || 0) - (b.ano || 0)); // Ordena do mais antigo para o mais novo
 
                 let htmlResultado = `
                     <h3 class="text-xl font-bold text-blue-800 mb-4">${nomeAutor}</h3>
@@ -3088,12 +3169,14 @@
 
                 trabalhosDoAutor.forEach(trabalho => {
                     let tipoBgColor = 'bg-gray-100';
-                    if (trabalho.tipo === 'TCC') tipoBgColor = 'bg-blue-100';
-                    if (trabalho.tipo === 'Dissertação') tipoBgColor = 'bg-green-100';
-                    if (trabalho.tipo === 'Tese') tipoBgColor = 'bg-purple-100';
+                    if (trabalho.tipo === 'TCC') tipoBgColor = 'bg-blue-50';
+                    if (trabalho.tipo === 'Dissertação') tipoBgColor = 'bg-green-50';
+                    if (trabalho.tipo === 'Tese') tipoBgColor = 'bg-purple-50';
                     
+                    // AQUI ESTÁ A MUDANÇA: Adicionado o onclick e classes de interação
                     htmlResultado += `
-                        <div class="p-4 rounded-lg border ${tipoBgColor}">
+                        <div class="p-4 rounded-lg border ${tipoBgColor} cursor-pointer hover:shadow-md hover:border-gray-400 transition-all duration-200"
+                             onclick="abrirModalPorId('${trabalho.id}')">
                             <div class="flex justify-between items-start">
                                 <h4 class="text-lg font-semibold text-gray-900">${trabalho.title}</h4>
                                 <span class="text-sm font-bold text-gray-700 whitespace-nowrap ml-4">${trabalho.ano} - ${trabalho.tipo}</span>
@@ -3105,7 +3188,8 @@
                             <div class="mt-3">
                                 <p class="text-xs font-semibold text-gray-700 mb-1">Palavras-chave:</p>
                                 <div class="flex flex-wrap gap-1">
-                                    ${trabalho.todasPalavrasChave.map(kw => `<span class="bg-white rounded-full px-2 py-0.5 text-xs font-medium text-gray-600 border">${kw}</span>`).join('')}
+                                    ${trabalho.todasPalavrasChave.slice(0, 5).map(kw => `<span class="bg-white rounded-full px-2 py-0.5 text-xs font-medium text-gray-600 border">${kw}</span>`).join('')}
+                                    ${trabalho.todasPalavrasChave.length > 5 ? `<span class="bg-white rounded-full px-2 py-0.5 text-xs font-medium text-gray-600 border">+${trabalho.todasPalavrasChave.length - 5}</span>` : ''}
                                 </div>
                             </div>
                         </div>
@@ -3120,13 +3204,18 @@
             selectAutor.addEventListener('change', (e) => {
                 exibirDetalhesAutor(e.target.value);
             });
+            
+            // Exibe o estado inicial (prompt para selecionar) se nenhum autor estiver selecionado
+            if (!selectAutor.value) {
+                 exibirDetalhesAutor('');
+            }
         }
 
         /**
-         * Renderiza os gráficos de indicadores infométricos.
-         * @param {Array} trabalhos - O array de trabalhos (filtrado ou completo).
+         * FUNÇÃO ATUALIZADA: Renderiza os gráficos de indicadores infométricos
+         * com a contagem de licenças corrigida.
          */
-        function renderizarIndicadoresInfometricos(trabalhos) {
+         function renderizarIndicadoresInfometricos(trabalhos) {
             // Destrói instâncias anteriores dos gráficos para evitar sobreposição
             if (graficoTimeToOnline) graficoTimeToOnline.destroy();
             if (graficoLicencas) graficoLicencas.destroy();
@@ -3141,7 +3230,7 @@
                     const anoDisponivel = new Date(trabalho.date_available).getFullYear();
                     if (!isNaN(anoDisponivel)) {
                         const diff = anoDisponivel - anoPublicacao;
-                        if (diff <= 0) timeDiffs['Mesmo ano']++; // Inclui casos de data de defesa no fim do ano
+                        if (diff <= 0) timeDiffs['Mesmo ano']++;
                         else if (diff === 1) timeDiffs['1 ano depois']++;
                         else if (diff === 2) timeDiffs['2 anos depois']++;
                         else if (diff >= 3) timeDiffs['3+ anos depois']++;
@@ -3157,28 +3246,19 @@
                     datasets: [{
                         label: 'Nº de Trabalhos',
                         data: Object.values(timeDiffs),
-                        backgroundColor: [
-                            'rgba(54, 162, 235, 0.6)',
-                            'rgba(255, 206, 86, 0.6)',
-                            'rgba(255, 159, 64, 0.6)',
-                            'rgba(255, 99, 132, 0.6)'
-                        ],
-                        borderColor: [
-                            'rgba(54, 162, 235, 1)',
-                            'rgba(255, 206, 86, 1)',
-                            'rgba(255, 159, 64, 1)',
-                            'rgba(255, 99, 132, 1)'
-                        ],
+                        backgroundColor: ['rgba(54, 162, 235, 0.6)', 'rgba(255, 206, 86, 0.6)', 'rgba(255, 159, 64, 0.6)', 'rgba(255, 99, 132, 0.6)'],
+                        borderColor: ['rgba(54, 162, 235, 1)', 'rgba(255, 206, 86, 1)', 'rgba(255, 159, 64, 1)', 'rgba(255, 99, 132, 1)'],
                         borderWidth: 1
                     }]
                 },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
 
-            // --- Lógica para o Gráfico de Licenças ---
+            // --- Lógica para o Gráfico de Licenças (CORRIGIDA) ---
             const licenseCounts = new Map();
             trabalhos.forEach(trabalho => {
-                const license = trabalho.rights_license || 'Não informada';
+                // AQUI ESTÁ A MUDANÇA: Usa a nova função de normalização
+                const license = normalizarLicenca(trabalho.rights_license);
                 licenseCounts.set(license, (licenseCounts.get(license) || 0) + 1);
             });
 
@@ -3189,7 +3269,8 @@
                     labels: Array.from(licenseCounts.keys()),
                     datasets: [{
                         data: Array.from(licenseCounts.values()),
-                        backgroundColor: ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#6b7280'],
+                        // Adicionamos mais cores para o caso de haver mais licenças
+                        backgroundColor: ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ef4444', '#6b7280', '#ec4899'],
                         hoverOffset: 4
                     }]
                 },
