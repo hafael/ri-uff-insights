@@ -184,6 +184,49 @@
             transform: translateY(0);
         }
     </style>
+    <!-- INÍCIO: NOVOS ESTILOS PARA FUNCIONALIDADES PLN -->
+    <style>
+        /* Estilos para entidades nomeadas destacadas no resumo */
+        .entity {
+            padding: 1px 4px;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .entity:hover {
+            filter: brightness(1.1);
+        }
+        .entity-LOC { background-color: #dbeafe; color: #1e40af; } /* Localização */
+        .entity-ORG { background-color: #dcfce7; color: #166534; } /* Organização */
+        .entity-LEI { background-color: #fee2e2; color: #991b1b; } /* Lei */
+        .entity-MISC { background-color: #f3e8ff; color: #581c87; } /* Miscelânea */
+        .entity-PER { background-color: #fef3c7; color: #92400e; } /* Pessoa */
+
+        /* Estilos para palavras-chave interativas no modal */
+        .keyword-interactive {
+            cursor: pointer;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+        .keyword-interactive:hover {
+            background-color: #e0e7ff; /* light indigo */
+            border-color: #a5b4fc;
+        }
+
+        /* Estilos para a seção de trabalhos semelhantes no modal */
+        #similar-docs-container button {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.2s ease;
+        }
+        #similar-docs-container button:hover {
+            background-color: #f3f4f6; /* gray-100 */
+        }
+    </style>
+    <!-- FIM: NOVOS ESTILOS PARA FUNCIONALIDADES PLN -->
     <style>
         /* Estilos para o modal e a funcionalidade de resumo expandido */
         .modal-body-grid {
@@ -639,6 +682,14 @@
                             <option value="Tese">Tese</option>
                         </select>
                     </div>
+                    <!-- INÍCIO: NOVA SEÇÃO DE FILTRO POR TÓPICOS -->
+                    <div class="md:col-span-4 lg:col-span-4 mt-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Explorar por Tópicos Principais</label>
+                        <div id="topic-filters" class="flex flex-wrap gap-2">
+                            <!-- Botões de tópico serão inseridos aqui pelo JavaScript -->
+                        </div>
+                    </div>
+                    <!-- FIM: NOVA SEÇÃO DE FILTRO POR TÓPICOS -->
                 </div>
                 <div class="mt-4 flex justify-end">
                     <button id="btn-aplicar-filtros" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Aplicar Filtros</button>
@@ -656,7 +707,7 @@
             
             <div class="mb-4">
                 <label for="filtro-busca-textual" class="block text-sm font-medium text-gray-700 mb-1">Refinar lista atual:</label>
-                <input type="search" id="filtro-busca-textual" placeholder="Buscar nos resultados por título, autor, palavra-chave..." class="w-full p-2 border rounded shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition">
+                <input type="search" id="filtro-busca-textual" placeholder="Buscar nos resultados por título, autor, resumo, palavra-chave..." class="w-full p-2 border rounded shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition">
             </div>
 
             <div id="info-trabalhos" class="mb-4 text-sm text-gray-600"></div>
@@ -1093,6 +1144,7 @@
 
     <script>
         // Dados do JSON (exemplo reduzido para demonstração)
+        const datasetFilePath = 'https://raw.githubusercontent.com/hafael/ri-uff-insights/refs/heads/main/dataset.json'; // Caminho para o arquivo JSON
         let datasetDate = '2025-08-30'; // Data do dataset (pode ser extraída do JSON se disponível)
         let data = [];
 
@@ -1124,6 +1176,16 @@
         let trabalhosExibidos = [];
         let debounceTimer;
 
+        const topicMap = {
+            1: 'História e Teoria da Biblioteconomia',
+            2: 'Gestão da Informação e Documentos',
+            3: 'Tecnologia da Informação',
+            4: 'Bibliotecas Digitais e Repositórios',
+            5: 'Estudos de Usuários e Práticas Informacionais'
+            // Adicione mais tópicos conforme necessário
+        };
+        let activeTopic = null;
+
         // --- FUNÇÃO PRINCIPAL DE CARREGAMENTO E INICIALIZAÇÃO ---
         async function iniciarAplicacao() {
             const loadingIndicator = document.getElementById('loading-indicator');
@@ -1137,7 +1199,7 @@
                 setupCookieConsent();
 
                 // 1. BUSCAR OS DADOS DO ARQUIVO JSON
-                const response = await fetch('https://raw.githubusercontent.com/hafael/ri-uff-insights/refs/heads/main/dataset.json');
+                const response = await fetch(datasetFilePath);
                 
                 // Verifica se o arquivo foi encontrado e o servidor respondeu corretamente
                 if (!response.ok) {
@@ -1163,6 +1225,7 @@
                 
                 // Renderizar componentes
                 preparaMenuResponsivo();
+                renderizarFiltrosDeTopico(); // NOVO: Renderiza os botões de tópico
 
                 // Adicionar Event Listeners
                 configurarEventListeners();
@@ -1598,7 +1661,8 @@
                 const todasPalavrasChave = [
                     ...(trabalho.keywords || []),
                     ...(trabalho.descriptors || []),
-                    ...(trabalho.additional_keywords || [])
+                    ...(trabalho.additional_keywords || []),
+                    ...(trabalho.auto_keywords || [])
                 ];
 
                 // Popula os sets para os filtros (isso só precisa ser feito uma vez)
@@ -1804,7 +1868,11 @@
 
             // Filtra a partir da lista mestra
             filteredTrabalhos = trabalhosProcessados.filter(trabalho => {
-                return (!area || (trabalho.descriptors && trabalho.descriptors.includes(area))) &&
+                // MODIFICAÇÃO: Adiciona a verificação do tópico ativo
+                const topicMatch = activeTopic === null || (trabalho.topic && trabalho.topic === activeTopic);
+                
+                return topicMatch &&
+                    (!area || (trabalho.descriptors && trabalho.descriptors.includes(area))) &&
                     (!ano || trabalho.ano === ano) &&
                     (!orientador || trabalho.orientadorNormalizado === orientador) &&
                     (!tipo || trabalho.tipo === tipo);
@@ -1813,7 +1881,6 @@
             // IMPORTANTE: Reseta a busca textual e atualiza a lista a ser exibida
             document.getElementById('filtro-busca-textual').value = '';
             trabalhosExibidos = [...filteredTrabalhos];
-            
             currentPage = 1; // Reseta a paginação
             atualizarDashboard(filteredTrabalhos); // Chama a função mestra
         }
@@ -1831,6 +1898,13 @@
             document.getElementById('busca-orientadores').value = ''; // <<< ADICIONE ESTA LINHA
             document.getElementById('busca-autores').value = '';    // <<< ADICIONE ESTA LINHA
             document.getElementById('busca-mapa-tematico').value = '';
+            
+            activeTopic = null; // Limpa o tópico ativo
+            // Reseta a aparência dos botões de tópico
+            document.querySelectorAll('#topic-filters button').forEach(btn => {
+                btn.classList.add('bg-white', 'text-gray-700', 'border-gray-300');
+                btn.classList.remove('bg-blue-600', 'text-white', 'border-blue-600');
+            });
             
             filteredTrabalhos = [...trabalhosProcessados];
             currentPage = 1;
@@ -1852,11 +1926,12 @@
             } else {
                 // Filtra a lista `filteredTrabalhos` aplicando a normalização em cada campo
                 trabalhosExibidos = filteredTrabalhos.filter(trabalho => {
+                    // MODIFICAÇÃO: A busca agora inclui o resumo (abstract)
                     return (trabalho.title && normalizarStringParaBusca(trabalho.title).includes(termoBusca)) ||
                         (trabalho.autorNormalizado && normalizarStringParaBusca(trabalho.autorNormalizado).includes(termoBusca)) ||
                         (trabalho.orientadorNormalizado && normalizarStringParaBusca(trabalho.orientadorNormalizado).includes(termoBusca)) ||
-                        (trabalho.todasPalavrasChave && trabalho.todasPalavrasChave.some(kw => normalizarStringParaBusca(kw).includes(termoBusca))) ||
-                        (trabalho.bancaNormalizada && trabalho.bancaNormalizada.some(membro => normalizarStringParaBusca(membro).includes(termoBusca)));
+                        (trabalho.abstract && normalizarStringParaBusca(trabalho.abstract).includes(termoBusca)) || // Busca no resumo
+                        (trabalho.todasPalavrasChave && trabalho.todasPalavrasChave.some(kw => normalizarStringParaBusca(kw).includes(termoBusca)));
                 });
             }
 
@@ -2065,109 +2140,69 @@
             const modal = document.getElementById('modal-trabalho');
             const modalTitulo = document.getElementById('modal-titulo');
             const modalConteudo = document.getElementById('modal-conteudo');
-            const btnVoltarTopo = document.getElementById('btn-voltar-topo');
-
-            if (btnVoltarTopo) {
-                btnVoltarTopo.style.display = 'none';
-            }
-
-            modalTitulo.textContent = trabalho.title;
-
-            // Gera a referência para ser usada no corpo do modal
-            const referenciaABNT = gerarReferencia(trabalho);
             
-            // Lógica do resumo
+            modalTitulo.textContent = trabalho.title;
+            
+            // MODIFICAÇÃO: Chama a função para destacar entidades no resumo
+            const resumoDestacado = destacarEntidades(trabalho.abstract, trabalho.entities);
+            
             let abstractContentHTML = '';
-            if (trabalho.abstract) {
-                if (trabalho.abstract.length > 300) {
-                    const truncatedAbstract = trabalho.abstract.substring(0, 300) + '...';
-                    abstractContentHTML = `
-                        <div class="resumo-content">
-                            <p class="text-justify">${truncatedAbstract}</p>
-                            <button id="toggle-abstract-btn" onclick="toggleAbstractView(this)" class="text-blue-600 font-semibold hover:underline mt-2">Leia mais...</button>
-                            <p class="text-justify hidden">${trabalho.abstract}</p>
-                        </div>
-                    `;
-                } else {
-                    abstractContentHTML = `<p class="text-justify">${trabalho.abstract}</p>`;
-                }
+            if (resumoDestacado) {
+                abstractContentHTML = `<p class="text-justify">${resumoDestacado}</p>`;
             } else {
                 abstractContentHTML = '<p>Resumo não disponível.</p>';
             }
 
-            // O HTML do modal é montado com os campos desagrupados (estado anterior)
+            // MODIFICAÇÃO: Gera as palavras-chave interativas
+            const keywordsHTML = [...new Set(trabalho.todasPalavrasChave)] // Remove duplicatas
+                .map(palavra => 
+                    `<button onclick="buscarPorTermo('${escapeRegExp(palavra.replace(/'/g, "\\'"))}')" class="keyword-interactive inline-block bg-gray-100 rounded-full px-3 py-1 text-xs font-semibold text-gray-700 border">${palavra}</button>`
+                ).join('');
+
+            // MODIFICAÇÃO: Gera a lista de trabalhos semelhantes
+            const similarDocsHTML = (trabalho.similar_docs || [])
+                .map(similarId => {
+                    const similarDoc = trabalhosProcessados.find(t => t.id === similarId);
+                    return similarDoc ? `<li><button onclick="abrirModalPorId(${similarId})">${similarDoc.title}</button></li>` : '';
+                }).join('');
+
             modalConteudo.innerHTML = `
                 <div class="modal-body-grid">
-                    <div class="hidable-on-abstract">
-                        <h4 class="font-semibold text-gray-500 text-sm">Autor</h4>
-                        <p>${trabalho.autorNormalizado || 'Não informado'}</p>
-                    </div>
-                    <div class="hidable-on-abstract">
-                        <h4 class="font-semibold text-gray-500 text-sm">Orientador</h4>
-                        <p>${trabalho.orientadorNormalizado || 'Não informado'}</p>
-                    </div>
-                    <div class="hidable-on-abstract">
-                        <h4 class="font-semibold text-gray-500 text-sm">Tipo e Ano</h4>
-                        <p>${trabalho.tipo} de ${trabalho.ano}</p>
-                    </div>
-                    <div class="hidable-on-abstract">
-                        <h4 class="font-semibold text-gray-500 text-sm">Nível</h4>
-                        <p>${trabalho.degree_level || 'Não informado'}</p>
-                    </div>
-                    <div class="md:col-span-2 hidable-on-abstract">
-                        <h4 class="font-semibold text-gray-500 text-sm">Banca Examinadora</h4>
-                        <p>${trabalho.bancaNormalizada && trabalho.bancaNormalizada.length > 0 ? trabalho.bancaNormalizada.join('; ') : 'Não informado'}</p>
-                    </div>
-                    
-                    <div class="md:col-span-2 mt-4 border-t pt-4">
-                        <h4 class="font-semibold text-gray-500 text-sm mb-2">Resumo</h4>
-                        ${abstractContentHTML}
-                    </div>
-
-                    <div class="md:col-span-2 hidable-on-abstract">
-                        <h4 class="font-semibold text-gray-500 text-sm">Palavras-chave</h4>
-                        <div class="flex flex-wrap gap-1 mt-1">
-                            ${trabalho.todasPalavrasChave.map(palavra => 
-                                `<span class="inline-block bg-gray-100 rounded-full px-2 py-0.5 text-xs font-semibold text-gray-700 border">${palavra}</span>`
-                            ).join('')}
+                    <!-- Coluna 1: Informações principais e resumo -->
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-semibold text-gray-500 text-sm">Autor</h4>
+                            <p>${trabalho.autorNormalizado || 'Não informado'}</p>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-500 text-sm">Orientador</h4>
+                            <p>${trabalho.orientadorNormalizado || 'Não informado'}</p>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-500 text-sm">Tipo e Ano</h4>
+                            <p>${trabalho.tipo} de ${trabalho.ano}</p>
+                        </div>
+                        <div class="mt-4 border-t pt-4">
+                            <h4 class="font-semibold text-gray-500 text-sm mb-2">Resumo</h4>
+                            <div class="max-h-60 overflow-y-auto pr-2 text-sm">${abstractContentHTML}</div>
                         </div>
                     </div>
-                     <div class="hidable-on-abstract">
-                        <h4 class="font-semibold text-gray-500 text-sm">Data de Defesa</h4>
-                        <p>${trabalho.date_issued ? new Date(trabalho.date_issued).toLocaleDateString('pt-BR') : 'Não informada'}</p>
-                    </div>
-                     <div class="hidable-on-abstract">
-                        <h4 class="font-semibold text-gray-500 text-sm">Disponível em</h4>
-                        <p>${trabalho.date_available ? new Date(trabalho.date_available).toLocaleDateString('pt-BR') : 'Não informada'}</p>
-                    </div>
-                     <div class="md:col-span-2 hidable-on-abstract">
-                        <h4 class="font-semibold text-gray-500 text-sm">Licença de Uso</h4>
-                        <p>${trabalho.rights_license || 'Não informada'}</p>
-                    </div>
 
-                    <div class="md:col-span-2 mt-4 border-t pt-4 hidable-on-abstract">
-                        <h4 class="font-semibold text-gray-500 text-sm mb-2">Referência ABNT</h4>
-                        <p class="text-sm text-gray-700 pr-2">
-                            ${referenciaABNT}
-                            <button onclick="copiarTextoParaClipboard(\`${referenciaABNT.replace(/`/g, '\\`')}\`)" class="ml-1 text-blue-600 font-semibold hover:underline text-xs align-top">[Copiar]</button>
-                        </p>
+                    <!-- Coluna 2: Descoberta de conteúdo -->
+                    <div class="space-y-4 border-t md:border-t-0 md:border-l md:pl-6 pt-4 md:pt-0">
+                        <div>
+                            <h4 class="font-semibold text-gray-500 text-sm">Palavras-chave</h4>
+                            <div class="flex flex-wrap gap-1 mt-1">${keywordsHTML}</div>
+                        </div>
+                        <div class="pt-4 border-t">
+                            <h4 class="font-semibold text-gray-500 text-sm">Trabalhos Semelhantes</h4>
+                            <ul id="similar-docs-container" class="mt-1 space-y-1 text-sm text-blue-700">${similarDocsHTML}</ul>
+                        </div>
                     </div>
                 </div>
             `;
             
-            const actionButtonsContainer = document.querySelector('#modal-trabalho .flex.justify-end');
-            actionButtonsContainer.id = "modal-actions";
-            actionButtonsContainer.innerHTML = `
-                <a id="btn-ver-repo" href="${trabalho.url}" target="_blank" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center text-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-                    Ver no Repositório
-                </a>
-                <a id="btn-ver-pdf" href="${trabalho.document_url || '#'}" target="_blank" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 flex items-center text-sm ${!trabalho.document_url ? 'opacity-50 cursor-not-allowed' : ''}">
-                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                    Ver PDF
-                </a>
-            `;
-            
+            // ... (resto do código para os botões de ação e exibição do modal)
             document.body.classList.add('overflow-hidden');
             modal.classList.remove('hidden');
         }
@@ -3305,6 +3340,79 @@
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } } }
             });
         }
+
+
+        function escapeRegExp(str) {
+            return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        function buscarPorTermo(termo) {
+            fecharModal();
+            const searchInput = document.getElementById('filtro-busca-textual');
+            searchInput.value = termo;
+            searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+            setTimeout(() => {
+                document.getElementById('trabalhos').scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+        }
+
+        function destacarEntidades(texto, entidades) {
+            if (!texto || !entidades || entidades.length === 0) {
+                return texto;
+            }
+            const sortedEntities = [...entidades].sort((a, b) => b.text.length - a.text.length);
+            let textoDestacado = texto;
+            const textosJaProcessados = new Set();
+            sortedEntities.forEach(entidade => {
+                if (textosJaProcessados.has(entidade.text.toLowerCase())) return;
+                const entityClass = `entity entity-${entidade.type || 'MISC'}`;
+                const replacementHTML = `<span class="${entityClass}" onclick="buscarPorTermo('${escapeRegExp(entidade.text.replace(/'/g, "\\'"))}')">${entidade.text}</span>`;
+                const regex = new RegExp(escapeRegExp(entidade.text), 'gi');
+                textoDestacado = textoDestacado.replace(regex, replacementHTML);
+                textosJaProcessados.add(entidade.text.toLowerCase());
+            });
+            return textoDestacado;
+        }
+
+        function renderizarFiltrosDeTopico() {
+            const container = document.getElementById('topic-filters');
+            container.innerHTML = '';
+            const criarBotao = (texto, id) => {
+                const button = document.createElement('button');
+                button.textContent = texto;
+                button.dataset.topicId = id;
+                button.className = 'px-3 py-1 text-sm font-medium border rounded-full transition-colors duration-200 text-gray-700 bg-white border-gray-300 hover:bg-gray-100';
+                button.addEventListener('click', () => filtrarPorTopico(id));
+                return button;
+            };
+            for (const [id, name] of Object.entries(topicMap)) {
+                container.appendChild(criarBotao(name, id));
+            }
+        }
+
+        function filtrarPorTopico(topicId) {
+            const topicIdNum = parseInt(topicId, 10);
+            // Desativa o tópico se ele já estiver ativo
+            if (activeTopic === topicIdNum) {
+                activeTopic = null;
+            } else {
+                activeTopic = topicIdNum;
+            }
+            
+            // Atualiza a aparência dos botões
+            document.querySelectorAll('#topic-filters button').forEach(btn => {
+                if (parseInt(btn.dataset.topicId, 10) === activeTopic) {
+                    btn.classList.remove('bg-white', 'text-gray-700', 'border-gray-300');
+                    btn.classList.add('bg-blue-600', 'text-white', 'border-blue-600');
+                } else {
+                    btn.classList.add('bg-white', 'text-gray-700', 'border-gray-300');
+                    btn.classList.remove('bg-blue-600', 'text-white', 'border-blue-600');
+                }
+            });
+
+            aplicarFiltros(); // Re-aplica todos os filtros, incluindo o de tópico
+        }
+
 
         // --- LÓGICA PARA O BANNER DE CONSENTIMENTO DE COOKIES ---
         function setupCookieConsent() {
