@@ -654,7 +654,7 @@
         <section id="filtros" class="mb-8 no-print">
             <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Filtros</h2>
             <div class="bg-white p-4 rounded-lg shadow">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Área Temática</label>
                         <select id="filtro-area" class="w-full p-2 border rounded">
@@ -690,6 +690,12 @@
                         </div>
                     </div>
                     <!-- FIM: NOVA SEÇÃO DE FILTRO POR TÓPICOS -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Metodologia</label>
+                        <select id="filtro-metodologia" class="w-full p-2 border rounded">
+                            <option value="">Todas as metodologias</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="mt-4 flex justify-end">
                     <button id="btn-aplicar-filtros" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Aplicar Filtros</button>
@@ -1068,6 +1074,33 @@
             </div>
         </section>
 
+        <section id="entidades-destaque-secao" class="mb-12 print-break">
+            <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Entidades em Destaque nos Resumos</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-4 md:p-6 rounded-lg shadow">
+                    <h3 class="text-lg font-medium text-blue-700 mb-4 text-center">Top 10 Organizações Citadas</h3>
+                    <div class="relative h-[400px]">
+                        <canvas id="grafico-entidades-org"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white p-4 md:p-6 rounded-lg shadow">
+                    <h3 class="text-lg font-medium text-blue-700 mb-4 text-center">Top 10 Localidades Citadas</h3>
+                    <div class="relative h-[400px]">
+                        <canvas id="grafico-entidades-loc"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="metodologias-secao" class="mb-12 print-break">
+            <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Metodologias de Pesquisa Mais Utilizadas</h2>
+            <div class="bg-white p-4 md:p-6 rounded-lg shadow">
+                <div class="relative h-[400px]">
+                    <canvas id="grafico-metodologias"></canvas>
+                </div>
+            </div>
+        </section>
+
         <section id="sobre-o-projeto" class="mb-12 print-break">
             <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Sobre o Projeto</h2>
             <div class="bg-white p-6 rounded-lg shadow space-y-4 text-gray-700">
@@ -1175,16 +1208,11 @@
         let mobileMenuLinks = null;
         let trabalhosExibidos = [];
         let debounceTimer;
-
-        const topicMap = {
-            1: 'História e Teoria da Biblioteconomia',
-            2: 'Gestão da Informação e Documentos',
-            3: 'Tecnologia da Informação',
-            4: 'Bibliotecas Digitais e Repositórios',
-            5: 'Estudos de Usuários e Práticas Informacionais'
-            // Adicione mais tópicos conforme necessário
-        };
+        let topicMap = {}; // Será preenchido dinamicamente
         let activeTopic = null;
+        let graficoEntidadesOrg = null;
+        let graficoEntidadesLoc = null;
+        let graficoMetodologias = null;
 
         // --- FUNÇÃO PRINCIPAL DE CARREGAMENTO E INICIALIZAÇÃO ---
         async function iniciarAplicacao() {
@@ -1218,6 +1246,8 @@
                 document.getElementById('dataset-date').textContent = new Date(datasetDate).toLocaleDateString('pt-BR');
                 
                 // Processar dados
+                //gerarTopicMapDinamico();
+                gerarTopicMap();
                 processarDados();
                 processarDadosTemas();
                 preencherFiltros();
@@ -1317,6 +1347,8 @@
             renderizarEvolucaoTemas();
             renderizarJornadaAutor(); // Já usa o 'autoresMap' recalculado
             renderizarIndicadoresInfometricos(trabalhos);
+            renderizarGraficosEntidades(trabalhos);
+            renderizarGraficoMetodologias(trabalhos);
             renderizarFiltrosAtivos(); // Renderiza os chips de filtros
             //renderizarMapaTematicoTabela();
             aplicarBuscaMapaTematico();
@@ -1775,7 +1807,7 @@
         /**
          * Mostra visualmente quais filtros estão ativos.
          */
-        function renderizarFiltrosAtivos() {
+         function renderizarFiltrosAtivos() {
             const container = document.getElementById('filtros-ativos-container');
             container.innerHTML = '';
             
@@ -1783,8 +1815,13 @@
                 'Área': document.getElementById('filtro-area').value,
                 'Ano': document.getElementById('filtro-ano').value,
                 'Orientador': document.getElementById('filtro-orientador').value,
-                'Tipo': document.getElementById('filtro-tipo').value
+                'Tipo': document.getElementById('filtro-tipo').value,
+                'Metodologia': document.getElementById('filtro-metodologia').value // NOVO
             };
+
+            if (activeTopic !== null && topicMap[activeTopic]) {
+                filtros['Tópico'] = topicMap[activeTopic];
+            }
 
             const temFiltros = Object.values(filtros).some(v => v !== '');
 
@@ -1798,10 +1835,11 @@
 
             for (const [key, value] of Object.entries(filtros)) {
                 if (value) {
+                    const filtroId = key === 'Tópico' ? 'filtro-topic' : `filtro-${key.toLowerCase()}`;
                     chipsHTML += `
                         <span class="inline-flex items-center bg-blue-100 text-blue-800 text-sm font-semibold pl-3 pr-1 py-1 rounded-full">
-                            ${key}: ${value}
-                            <button class="ml-2 flex-shrink-0 bg-blue-200 hover:bg-blue-300 rounded-full h-5 w-5 flex items-center justify-center" data-filtro-id="filtro-${key.toLowerCase()}">
+                            ${value}
+                            <button class="ml-2 flex-shrink-0 bg-blue-200 hover:bg-blue-300 rounded-full h-5 w-5 flex items-center justify-center" data-filtro-id="${filtroId}">
                                 &times;
                             </button>
                         </span>
@@ -1811,11 +1849,20 @@
             chipsHTML += `</div>`;
             container.innerHTML = chipsHTML;
 
-            // Adiciona event listeners para os botões de remover chip
             container.querySelectorAll('button').forEach(button => {
                 button.addEventListener('click', () => {
                     const filtroId = button.dataset.filtroId;
-                    document.getElementById(filtroId).value = '';
+                    
+                    if (filtroId === 'filtro-topic') {
+                        activeTopic = null;
+                        document.querySelectorAll('#topic-filters button').forEach(btn => {
+                            btn.classList.add('bg-white', 'text-gray-700', 'border-gray-300');
+                            btn.classList.remove('bg-blue-600', 'text-white', 'border-blue-600');
+                        });
+                    } else {
+                        document.getElementById(filtroId).value = '';
+                    }
+                    
                     aplicarFiltros();
                 });
             });
@@ -1823,29 +1870,43 @@
     
         // Preencher filtros
         function preencherFiltros() {
-            // Áreas temáticas
+            const areasTematicas = new Set();
+            const anos = new Set();
+            const orientadoresSet = new Set();
+            const metodologias = new Set(); // NOVO: Set para metodologias
+
+            trabalhosProcessados.forEach(trabalho => {
+                if (trabalho.descriptors && trabalho.descriptors.length > 0) {
+                    trabalho.descriptors.forEach(area => areasTematicas.add(area));
+                }
+                if (trabalho.ano !== 'Não informado') anos.add(trabalho.ano);
+                if (trabalho.orientadorNormalizado) orientadoresSet.add(trabalho.orientadorNormalizado);
+                
+                // NOVO: Popula o Set de metodologias
+                if (trabalho.methodologies && trabalho.methodologies.length > 0) {
+                    trabalho.methodologies.forEach(metodo => metodologias.add(metodo));
+                }
+            });
+
+            // Áreas temáticas (lógica existente)
             const filtroArea = document.getElementById('filtro-area');
-            areasTematicas.forEach(area => {
+            Array.from(areasTematicas).sort().forEach(area => {
                 const option = document.createElement('option');
                 option.value = area;
                 option.textContent = area;
                 filtroArea.appendChild(option);
             });
             
-            // Anos
+            // Anos (lógica existente)
             const filtroAno = document.getElementById('filtro-ano');
-            Array.from(anos).sort((a, b) => {
-                if (a === 'Não informado') return 1;
-                if (b === 'Não informado') return -1;
-                return parseInt(b) - parseInt(a);
-            }).forEach(ano => {
+            Array.from(anos).sort((a, b) => b - a).forEach(ano => {
                 const option = document.createElement('option');
                 option.value = ano;
                 option.textContent = ano;
                 filtroAno.appendChild(option);
             });
             
-            // Orientadores
+            // Orientadores (lógica existente)
             const filtroOrientador = document.getElementById('filtro-orientador');
             Array.from(orientadoresSet).sort().forEach(orientador => {
                 const option = document.createElement('option');
@@ -1853,60 +1914,71 @@
                 option.textContent = orientador;
                 filtroOrientador.appendChild(option);
             });
+
+            // NOVO: Popula o select de metodologias
+            const filtroMetodologia = document.getElementById('filtro-metodologia');
+            Array.from(metodologias).sort().forEach(metodo => {
+                const option = document.createElement('option');
+                option.value = metodo;
+                option.textContent = metodo;
+                filtroMetodologia.appendChild(option);
+            });
         }
     
         // Aplicar filtros
         // MODIFICADA: Agora apenas aplica o filtro e chama a atualização
         function aplicarFiltros() {
-
             resetarVisualizacoesDeGrafos();
 
             const area = document.getElementById('filtro-area').value;
             const ano = document.getElementById('filtro-ano').value;
             const orientador = document.getElementById('filtro-orientador').value;
             const tipo = document.getElementById('filtro-tipo').value;
+            const metodologia = document.getElementById('filtro-metodologia').value; // NOVO
 
             // Filtra a partir da lista mestra
             filteredTrabalhos = trabalhosProcessados.filter(trabalho => {
-                // MODIFICAÇÃO: Adiciona a verificação do tópico ativo
                 const topicMatch = activeTopic === null || (trabalho.topic && trabalho.topic === activeTopic);
                 
+                // NOVO: Adiciona a condição de filtro por metodologia
+                const metodologiaMatch = !metodologia || (trabalho.methodologies && trabalho.methodologies.includes(metodologia));
+
                 return topicMatch &&
+                    metodologiaMatch && // <-- CONDIÇÃO ADICIONADA
                     (!area || (trabalho.descriptors && trabalho.descriptors.includes(area))) &&
                     (!ano || trabalho.ano === ano) &&
                     (!orientador || trabalho.orientadorNormalizado === orientador) &&
                     (!tipo || trabalho.tipo === tipo);
             });
 
-            // IMPORTANTE: Reseta a busca textual e atualiza a lista a ser exibida
             document.getElementById('filtro-busca-textual').value = '';
             trabalhosExibidos = [...filteredTrabalhos];
-            currentPage = 1; // Reseta a paginação
-            atualizarDashboard(filteredTrabalhos); // Chama a função mestra
+            currentPage = 1;
+            atualizarDashboard(filteredTrabalhos);
         }
     
         // Limpar filtros
         // MODIFICADA: Limpa os filtros e chama a atualização com os dados completos
         function limparFiltros() {
-
             resetarVisualizacoesDeGrafos();
             document.getElementById('filtro-area').value = '';
             document.getElementById('filtro-ano').value = '';
             document.getElementById('filtro-orientador').value = '';
             document.getElementById('filtro-tipo').value = '';
-            document.getElementById('filtro-busca-textual').value = ''; // <<< ADICIONE ESTA LINHA
-            document.getElementById('busca-orientadores').value = ''; // <<< ADICIONE ESTA LINHA
-            document.getElementById('busca-autores').value = '';    // <<< ADICIONE ESTA LINHA
+            document.getElementById('filtro-metodologia').value = ''; // NOVO
+            document.getElementById('filtro-busca-textual').value = '';
+            document.getElementById('busca-orientadores').value = '';
+            document.getElementById('busca-autores').value = '';
             document.getElementById('busca-mapa-tematico').value = '';
             
-            activeTopic = null; // Limpa o tópico ativo
-            // Reseta a aparência dos botões de tópico
+            activeTopic = null;
             document.querySelectorAll('#topic-filters button').forEach(btn => {
                 btn.classList.add('bg-white', 'text-gray-700', 'border-gray-300');
                 btn.classList.remove('bg-blue-600', 'text-white', 'border-blue-600');
             });
             
             filteredTrabalhos = [...trabalhosProcessados];
+            trabalhosExibidos = [...trabalhosProcessados]; // NOVO: Garante que a lista de exibição também seja resetada
             currentPage = 1;
             atualizarDashboard(trabalhosProcessados);
         }
@@ -1916,7 +1988,7 @@
          * com base no termo de busca textual e atualiza APENAS a lista e a paginação.
          * UTILIZA NORMALIZAÇÃO DE STRING PARA IGNORAR ACENTOS E CAIXA.
          */
-        function aplicarBuscaLocal() {
+         function aplicarBuscaLocal() {
             // A busca agora usa a função de normalização completa
             const termoBusca = normalizarStringParaBusca(document.getElementById('filtro-busca-textual').value);
 
@@ -1926,11 +1998,11 @@
             } else {
                 // Filtra a lista `filteredTrabalhos` aplicando a normalização em cada campo
                 trabalhosExibidos = filteredTrabalhos.filter(trabalho => {
-                    // MODIFICAÇÃO: A busca agora inclui o resumo (abstract)
+                    // MODIFICAÇÃO: A busca agora inclui o resumo (abstract) e todas as palavras-chave
                     return (trabalho.title && normalizarStringParaBusca(trabalho.title).includes(termoBusca)) ||
                         (trabalho.autorNormalizado && normalizarStringParaBusca(trabalho.autorNormalizado).includes(termoBusca)) ||
                         (trabalho.orientadorNormalizado && normalizarStringParaBusca(trabalho.orientadorNormalizado).includes(termoBusca)) ||
-                        (trabalho.abstract && normalizarStringParaBusca(trabalho.abstract).includes(termoBusca)) || // Busca no resumo
+                        (trabalho.abstract && normalizarStringParaBusca(trabalho.abstract).includes(termoBusca)) ||
                         (trabalho.todasPalavrasChave && trabalho.todasPalavrasChave.some(kw => normalizarStringParaBusca(kw).includes(termoBusca)));
                 });
             }
@@ -2143,81 +2215,65 @@
             
             modalTitulo.textContent = trabalho.title;
             
-            // MODIFICAÇÃO: Chama a função para destacar entidades no resumo
+            // 1. Destaque de Entidades (lógica existente)
             const resumoDestacado = destacarEntidades(trabalho.abstract, trabalho.entities);
+            let abstractContentHTML = resumoDestacado ? `<p class="text-justify">${resumoDestacado}</p>` : '<p>Resumo não disponível.</p>';
+
+            // 2. Palavras-chave Interativas (lógica existente)
+            const manualKeywords = new Set([...(trabalho.keywords || []), ...(trabalho.descriptors || []), ...(trabalho.additional_keywords || [])]);
+            const autoKeywords = new Set(trabalho.auto_keywords || []);
+            autoKeywords.forEach(kw => { if (manualKeywords.has(kw)) { autoKeywords.delete(kw); } });
+
+            const manualKeywordsHTML = Array.from(manualKeywords).map(palavra => `<button onclick="buscarPorTermo('${escapeRegExp(palavra.replace(/'/g, "\\'"))}')" class="keyword-interactive inline-block bg-gray-100 rounded-full px-3 py-1 text-xs font-semibold text-gray-700 border">${palavra}</button>`).join('');
+            const autoKeywordsHTML = Array.from(autoKeywords).map(palavra => `<button onclick="buscarPorTermo('${escapeRegExp(palavra.replace(/'/g, "\\'"))}')" title="Palavra-chave extraída automaticamente" class="keyword-interactive inline-block bg-gray-100 rounded-full px-3 py-1 text-xs font-semibold text-gray-600 border border-dashed">${palavra}</button>`).join('');
+            const keywordsHTML = manualKeywordsHTML + autoKeywordsHTML;
+
+            // 3. Trabalhos Semelhantes (lógica existente)
+            const similarDocsHTML = (trabalho.similar_docs || []).map(similarId => { const similarDoc = trabalhosProcessados.find(t => t.id === similarId); return similarDoc ? `<li><button onclick="abrirModalPorId('${similarDoc.id}')">${similarDoc.title}</button></li>` : ''; }).join('');
+
+            // NOVO: 4. Relações Conceituais
+            const relationshipsHTML = (trabalho.relationships && trabalho.relationships.length > 0)
+                ? trabalho.relationships.map(([sujeito, verbo, objeto]) => 
+                    `<li class="flex items-start"><span class="capitalize font-medium text-gray-900">${sujeito}</span><span class="mx-2 font-bold text-blue-600">→</span><span>${verbo}</span><span class="mx-2 font-bold text-blue-600">→</span><span>${objeto}</span></li>`
+                  ).join('')
+                : '';
             
-            let abstractContentHTML = '';
-            if (resumoDestacado) {
-                abstractContentHTML = `<p class="text-justify">${resumoDestacado}</p>`;
-            } else {
-                abstractContentHTML = '<p>Resumo não disponível.</p>';
-            }
-
-            // MODIFICAÇÃO: Gera as palavras-chave interativas
-            const keywordsHTML = [...new Set(trabalho.todasPalavrasChave)] // Remove duplicatas
-                .map(palavra => 
-                    `<button onclick="buscarPorTermo('${escapeRegExp(palavra.replace(/'/g, "\\'"))}')" class="keyword-interactive inline-block bg-gray-100 rounded-full px-3 py-1 text-xs font-semibold text-gray-700 border">${palavra}</button>`
-                ).join('');
-
-            // MODIFICAÇÃO: Gera a lista de trabalhos semelhantes
-            const similarDocsHTML = (trabalho.similar_docs || [])
-                .map(similarId => {
-                    const similarDoc = trabalhosProcessados.find(t => t.id === similarId);
-                    return similarDoc ? `<li><button onclick="abrirModalPorId(${similarId})">${similarDoc.title}</button></li>` : '';
-                }).join('');
-
+            // 5. Monta o corpo do Modal com a nova estrutura, incluindo as relações
             modalConteudo.innerHTML = `
-                <div class="modal-body-grid">
-                    <!-- Coluna 1: Informações principais e resumo -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                     <div class="space-y-4">
-                        <div>
-                            <h4 class="font-semibold text-gray-500 text-sm">Autor</h4>
-                            <p>${trabalho.autorNormalizado || 'Não informado'}</p>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-gray-500 text-sm">Orientador</h4>
-                            <p>${trabalho.orientadorNormalizado || 'Não informado'}</p>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-gray-500 text-sm">Tipo e Ano</h4>
-                            <p>${trabalho.tipo} de ${trabalho.ano}</p>
-                        </div>
-                        <div class="mt-4 border-t pt-4">
-                            <h4 class="font-semibold text-gray-500 text-sm mb-2">Resumo</h4>
-                            <div class="max-h-60 overflow-y-auto pr-2 text-sm">${abstractContentHTML}</div>
-                        </div>
+                        <div><h4 class="font-semibold text-gray-500 text-sm">Autor</h4><p>${trabalho.autorNormalizado || 'Não informado'}</p></div>
+                        <div><h4 class="font-semibold text-gray-500 text-sm">Orientador</h4><p>${trabalho.orientadorNormalizado || 'Não informado'}</p></div>
+                        <div><h4 class="font-semibold text-gray-500 text-sm">Tipo e Ano</h4><p>${trabalho.tipo} de ${trabalho.ano}</p></div>
+                        <div class="mt-4 border-t pt-4"><h4 class="font-semibold text-gray-500 text-sm mb-2">Resumo</h4><div class="max-h-60 overflow-y-auto pr-2 text-sm">${abstractContentHTML}</div></div>
                     </div>
-
-                    <!-- Coluna 2: Descoberta de conteúdo -->
                     <div class="space-y-4 border-t md:border-t-0 md:border-l md:pl-6 pt-4 md:pt-0">
-                        <div>
-                            <h4 class="font-semibold text-gray-500 text-sm">Palavras-chave</h4>
-                            <div class="flex flex-wrap gap-1 mt-1">${keywordsHTML}</div>
-                        </div>
-                        <div class="pt-4 border-t">
-                            <h4 class="font-semibold text-gray-500 text-sm">Trabalhos Semelhantes</h4>
-                            <ul id="similar-docs-container" class="mt-1 space-y-1 text-sm text-blue-700">${similarDocsHTML}</ul>
-                        </div>
+                        ${similarDocsHTML ? `<div><h4 class="font-semibold text-gray-500 text-sm">Trabalhos Semelhantes</h4><ul id="similar-docs-container" class="mt-1 space-y-1 text-sm text-blue-700">${similarDocsHTML}</ul></div>` : ''}
+                        ${keywordsHTML ? `<div class="pt-4 ${similarDocsHTML ? 'border-t' : ''}"><h4 class="font-semibold text-gray-500 text-sm">Palavras-chave</h4><div class="flex flex-wrap gap-2 mt-1">${keywordsHTML}</div></div>` : ''}
+                        ${relationshipsHTML ? `<div class="pt-4 border-t"><h4 class="font-semibold text-gray-500 text-sm">Relações Conceituais-Chave</h4><ul class="mt-2 space-y-2 text-sm text-gray-700">${relationshipsHTML}</ul></div>` : ''}
                     </div>
                 </div>
             `;
             
-            // ... (resto do código para os botões de ação e exibição do modal)
+            // Configura os botões de ação do modal
+            document.getElementById('btn-url').onclick = () => window.open(trabalho.url, '_blank');
+            document.getElementById('btn-download').onclick = () => window.open(trabalho.document_url, '_blank');
+            document.getElementById('btn-copiar').onclick = () => copiarTextoParaClipboard(trabalho.citation || gerarReferencia(trabalho));
+
+            // Exibe o modal
             document.body.classList.add('overflow-hidden');
             modal.classList.remove('hidden');
         }
-    
+
         /**
          * NOVA FUNÇÃO AUXILIAR: Encontra um trabalho pelo ID e abre o modal.
          */
-         function abrirModalPorId(trabalhoId) {
-            // A variável 'trabalhosProcessados' deve estar acessível globalmente
+        function abrirModalPorId(trabalhoId) {
             const trabalho = trabalhosProcessados.find(t => t.id === trabalhoId);
             if (trabalho) {
                 abrirModal(trabalho);
             } else {
                 console.error('Trabalho não encontrado com o ID:', trabalhoId);
-                alert('Ocorreu um erro ao tentar abrir os detalhes do trabalho.');
             }
         }
 
@@ -3342,6 +3398,132 @@
         }
 
 
+        /**
+         * Renderiza os gráficos de barras para as entidades mais citadas (ORG e LOC).
+         */
+         function renderizarGraficosEntidades(trabalhos) {
+            // Garante que instâncias anteriores dos gráficos sejam destruídas
+            if (graficoEntidadesOrg) graficoEntidadesOrg.destroy();
+            if (graficoEntidadesLoc) graficoEntidadesLoc.destroy();
+
+            const orgCounts = new Map();
+            const locCounts = new Map();
+
+            // 1. Processa e conta todas as entidades do tipo ORG e LOC
+            trabalhos.forEach(trabalho => {
+                if (trabalho.entities) {
+                    trabalho.entities.forEach(entity => {
+                        if (entity.type === 'ORG') {
+                            orgCounts.set(entity.text, (orgCounts.get(entity.text) || 0) + 1);
+                        } else if (entity.type === 'LOC') {
+                            locCounts.set(entity.text, (locCounts.get(entity.text) || 0) + 1);
+                        }
+                    });
+                }
+            });
+
+            // Função auxiliar para criar um gráfico
+            const criarGrafico = (canvasId, dataMap, label) => {
+                const top10 = Array.from(dataMap.entries())
+                    .sort((a, b) => b[1] - a[1]) // Ordena por contagem
+                    .slice(0, 10) // Pega os 10 primeiros
+                    .reverse(); // Inverte para o maior ficar no topo no gráfico de barras horizontal
+
+                const ctx = document.getElementById(canvasId).getContext('2d');
+                return new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: top10.map(item => item[0]),
+                        datasets: [{
+                            label: label,
+                            data: top10.map(item => item[1]),
+                            backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y', // Torna o gráfico de barras horizontal
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                ticks: { stepSize: 1 }
+                            }
+                        }
+                    }
+                });
+            };
+
+            // 3. Cria os dois gráficos
+            graficoEntidadesOrg = criarGrafico('grafico-entidades-org', orgCounts, 'Nº de Citações');
+            graficoEntidadesLoc = criarGrafico('grafico-entidades-loc', locCounts, 'Nº de Citações');
+        }
+
+        /**
+         * Renderiza um gráfico de barras para as metodologias mais utilizadas.
+         */
+         function renderizarGraficoMetodologias(trabalhos) {
+            if (graficoMetodologias) graficoMetodologias.destroy();
+
+            const metodologiaCounts = new Map();
+
+            // 1. Processa e conta todas as metodologias
+            trabalhos.forEach(trabalho => {
+                if (trabalho.methodologies && trabalho.methodologies.length > 0) {
+                    trabalho.methodologies.forEach(metodo => {
+                        // Normaliza para evitar contagens duplas (ex: "Estudo de Caso" e "estudo de caso")
+                        const metodoNormalizado = metodo.charAt(0).toUpperCase() + metodo.slice(1).toLowerCase();
+                        metodologiaCounts.set(metodoNormalizado, (metodologiaCounts.get(metodoNormalizado) || 0) + 1);
+                    });
+                }
+            });
+
+            // 2. Prepara os dados para o gráfico
+            const top15 = Array.from(metodologiaCounts.entries())
+                .sort((a, b) => b[1] - a[1]) // Ordena por contagem
+                .slice(0, 15) // Pega as 15 principais
+                .reverse(); // Inverte para o maior ficar no topo
+
+            // 3. Cria o gráfico
+            const ctx = document.getElementById('grafico-metodologias').getContext('2d');
+            graficoMetodologias = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: top15.map(item => item[0]),
+                    datasets: [{
+                        label: 'Nº de Trabalhos',
+                        data: top15.map(item => item[1]),
+                        backgroundColor: 'rgba(16, 185, 129, 0.5)', // Tom de verde
+                        borderColor: 'rgba(16, 185, 129, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        title: {
+                            display: true,
+                            text: 'Top 15 Metodologias por Frequência'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 1 }
+                        }
+                    }
+                }
+            });
+        }
+
         function escapeRegExp(str) {
             return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         }
@@ -3350,7 +3532,9 @@
             fecharModal();
             const searchInput = document.getElementById('filtro-busca-textual');
             searchInput.value = termo;
+            // Dispara o evento de 'input' para ativar o debounce da busca
             searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+            // Rola a página para a seção de trabalhos após um pequeno atraso
             setTimeout(() => {
                 document.getElementById('trabalhos').scrollIntoView({ behavior: 'smooth' });
             }, 100);
@@ -3360,17 +3544,31 @@
             if (!texto || !entidades || entidades.length === 0) {
                 return texto;
             }
+            // Ordena as entidades pela mais longa primeiro para evitar substituições parciais
             const sortedEntities = [...entidades].sort((a, b) => b.text.length - a.text.length);
             let textoDestacado = texto;
+            
+            // Usamos um Set para não processar o mesmo texto duas vezes, caso haja entidades sobrepostas
             const textosJaProcessados = new Set();
+
             sortedEntities.forEach(entidade => {
+                // Pula se o texto exato já foi transformado em um span HTML
                 if (textosJaProcessados.has(entidade.text.toLowerCase())) return;
+
                 const entityClass = `entity entity-${entidade.type || 'MISC'}`;
-                const replacementHTML = `<span class="${entityClass}" onclick="buscarPorTermo('${escapeRegExp(entidade.text.replace(/'/g, "\\'"))}')">${entidade.text}</span>`;
-                const regex = new RegExp(escapeRegExp(entidade.text), 'gi');
-                textoDestacado = textoDestacado.replace(regex, replacementHTML);
-                textosJaProcessados.add(entidade.text.toLowerCase());
+                // Escapa aspas simples que possam quebrar o HTML do onclick
+                const textoParaBusca = escapeRegExp(entidade.text.replace(/'/g, "\\'"));
+                const replacementHTML = `<span class="${entityClass}" onclick="buscarPorTermo('${textoParaBusca}')">${entidade.text}</span>`;
+                
+                // Usa Regex para substituir todas as ocorrências da entidade (case-insensitive e global)
+                // A flag 'g' garante que todas as ocorrências sejam substituídas, não apenas a primeira.
+                const regex = new RegExp(escapeRegExp(entidade.text), 'g');
+                if (regex.test(textoDestacado)) {
+                    textoDestacado = textoDestacado.replace(regex, replacementHTML);
+                    textosJaProcessados.add(entidade.text.toLowerCase());
+                }
             });
+
             return textoDestacado;
         }
 
@@ -3412,7 +3610,92 @@
 
             aplicarFiltros(); // Re-aplica todos os filtros, incluindo o de tópico
         }
+        
+        /**
+         * Analisa o dataset para criar dinamicamente um mapa de IDs de tópicos para nomes genéricos.
+         * Isso garante que todos os tópicos presentes nos dados sejam representados.
+         */
+        function gerarTopicMapDinamico() {
+            const topicosEncontrados = new Set();
+            data.forEach(trabalho => {
+                // Verifica se o campo 'topic' existe e não é nulo/undefined
+                if (trabalho.topic !== undefined && trabalho.topic !== null) {
+                    topicosEncontrados.add(trabalho.topic);
+                }
+            });
 
+            // Ordena os tópicos numericamente para garantir uma ordem consistente nos filtros
+            const topicosOrdenados = Array.from(topicosEncontrados).sort((a, b) => a - b);
+
+            // Limpa o mapa antigo e preenche com os novos tópicos encontrados
+            topicMap = {};
+            topicosOrdenados.forEach(id => {
+                // Cria um nome genérico para cada tópico. Ex: "Tópico 1", "Tópico 2", etc.
+                topicMap[id] = `Tópico ${id}`;
+            });
+        }
+
+        /**
+         * Gera o mapa de tópicos a partir do campo 'topic_label' do dataset.
+         */
+         function gerarTopicMap() {
+            topicMap = {}; // Limpa o mapa
+            data.forEach(trabalho => {
+                if (trabalho.topic && trabalho.topic_label) {
+                    // Evita sobrescrever se já existir, garantindo um nome consistente
+                    if (!topicMap[trabalho.topic]) {
+                        topicMap[trabalho.topic] = trabalho.topic_label;
+                    }
+                }
+            });
+        }
+
+        /**
+         * Renderiza os botões de filtro para cada tópico no mapa.
+         */
+        function renderizarFiltrosDeTopico() {
+            const container = document.getElementById('topic-filters');
+            container.innerHTML = ''; // Limpa antes de renderizar
+            
+            // Ordena os tópicos pelo ID numérico para uma exibição consistente
+            const topicosOrdenados = Object.entries(topicMap).sort((a, b) => a[0] - b[0]);
+
+            for (const [id, name] of topicosOrdenados) {
+                const button = document.createElement('button');
+                button.textContent = name;
+                button.dataset.topicId = id;
+                button.className = 'px-3 py-1 text-sm font-medium border rounded-full transition-colors duration-200 text-gray-700 bg-white border-gray-300 hover:bg-gray-100';
+                button.addEventListener('click', () => filtrarPorTopico(parseInt(id, 10)));
+                container.appendChild(button);
+            }
+        }
+
+        /**
+         * Ativa/desativa o filtro por tópico e atualiza o dashboard.
+         * @param {number} topicId O ID do tópico clicado.
+         */
+        function filtrarPorTopico(topicId) {
+            // Desativa o filtro se o mesmo tópico for clicado novamente
+            if (activeTopic === topicId) {
+                activeTopic = null;
+            } else {
+                activeTopic = topicId;
+            }
+            
+            // Atualiza a aparência visual dos botões
+            document.querySelectorAll('#topic-filters button').forEach(btn => {
+                if (parseInt(btn.dataset.topicId, 10) === activeTopic) {
+                    btn.classList.remove('bg-white', 'text-gray-700', 'border-gray-300');
+                    btn.classList.add('bg-blue-600', 'text-white', 'border-blue-600');
+                } else {
+                    btn.classList.add('bg-white', 'text-gray-700', 'border-gray-300');
+                    btn.classList.remove('bg-blue-600', 'text-white', 'border-blue-600');
+                }
+            });
+
+            // Re-aplica todos os outros filtros junto com o de tópico
+            aplicarFiltros(); 
+        }
 
         // --- LÓGICA PARA O BANNER DE CONSENTIMENTO DE COOKIES ---
         function setupCookieConsent() {
