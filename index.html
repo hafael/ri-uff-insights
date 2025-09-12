@@ -238,6 +238,21 @@
             .modal-body-grid {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
+            #modal-trabalho > div { /* O contêiner branco do modal */
+                height: 90vh; /* Ocupa 90% da altura da tela */
+                display: flex;
+                flex-direction: column;
+            }
+            #modal-conteudo {
+                flex-grow: 1; /* Faz o conteúdo principal ocupar o espaço restante */
+                overflow-y: auto; /* Adiciona scroll apenas nesta área */
+            }
+            #modal-trabalho .pt-4.border-t { /* O contêiner dos botões */
+                flex-shrink: 0; /* Impede que o rodapé encolha */
+                flex-wrap: wrap; /* Permite que os botões quebrem a linha */
+                justify-content: center; /* Centraliza os botões quando quebram a linha */
+                gap: 0.5rem; /* Adiciona um espaçamento entre os botões */
+            }
         }
         
         /* Controla a visibilidade dos elementos quando o resumo está expandido */
@@ -549,6 +564,9 @@
             </button>
         </div>
     </div>
+    <div id="filtro-ativo-global" class="fixed top-16 left-0 right-0 bg-amber-100 border-b-2 border-amber-300 text-amber-800 text-center py-2 text-sm font-semibold hidden z-30">
+        Atenção: A visualização dos dados está filtrada. <button onclick="limparFiltros()" class="underline font-bold hover:text-amber-900">Limpar filtros</button> para ver todos os dados.
+    </div>
 
     <nav id="main-nav" class="bg-white/70 backdrop-blur-lg sticky top-0 z-40 w-full border-b border-gray-200 transition-all duration-300">
         
@@ -654,7 +672,7 @@
         <section id="filtros" class="mb-8 no-print">
             <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Filtros</h2>
             <div class="bg-white p-4 rounded-lg shadow">
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Área Temática</label>
                         <select id="filtro-area" class="w-full p-2 border rounded">
@@ -713,7 +731,7 @@
             
             <div class="mb-4">
                 <label for="filtro-busca-textual" class="block text-sm font-medium text-gray-700 mb-1">Refinar lista atual:</label>
-                <input type="search" id="filtro-busca-textual" placeholder="Buscar nos resultados por título, autor, resumo, palavra-chave..." class="w-full p-2 border rounded shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition">
+                <input type="search" id="filtro-busca-textual" placeholder="Buscar nos resultados por título, autor, resumo, palavra-chave..." class="w-full md:w-1/2 p-2 border border-2 rounded border-blue-200 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 transition">
             </div>
 
             <div id="info-trabalhos" class="mb-4 text-sm text-gray-600"></div>
@@ -731,7 +749,7 @@
         <section id="indice-orientadores" class="mb-12 print-break">
             <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Índice de Orientadores</h2>
             <div class="mb-4">
-                <input type="search" id="busca-orientadores" placeholder="Buscar orientador pelo nome..." class="w-full md:w-1/2 p-2 border rounded shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition">
+                <input type="search" id="busca-orientadores" placeholder="Buscar orientador pelo nome..." class="w-full md:w-1/2 p-2 border border-2 rounded border-blue-200 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 transition">
             </div>
             <div id="tabela-orientadores" class="compact-card-table md:bg-white md:rounded-lg md:shadow overflow-hidden">
                 <table class="min-w-full divide-y divide-gray-200">
@@ -756,7 +774,7 @@
         <section id="indice-autores" class="mb-12 print-break">
             <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Índice de Autores</h2>
             <div class="mb-4">
-                <input type="search" id="busca-autores" placeholder="Buscar autor pelo nome..." class="w-full md:w-1/2 p-2 border rounded shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition">
+                <input type="search" id="busca-autores" placeholder="Buscar autor pelo nome..." class="w-full md:w-1/2 p-2 border border-2 rounded border-blue-200 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 transition">
             </div>
             <div id="tabela-autores" class="compact-card-table md:bg-white md:rounded-lg md:shadow overflow-hidden">
                 <table class="min-w-full divide-y divide-gray-200">
@@ -795,7 +813,7 @@
             </div>
 
             <div class="mb-4">
-                <input type="search" id="busca-mapa-tematico" placeholder="Buscar tema pelo nome..." class="w-full md:w-1/2 p-2 border rounded shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition">
+                <input type="search" id="busca-mapa-tematico" placeholder="Buscar tema pelo nome..." class="w-full md:w-1/2 p-2 border border-2 rounded border-blue-200 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 transition">
             </div>
 
             <div class="bg-white p-4 md:p-6 rounded-xl shadow-lg border border-gray-100 space-y-8">
@@ -1809,6 +1827,7 @@
          */
          function renderizarFiltrosAtivos() {
             const container = document.getElementById('filtros-ativos-container');
+            const bannerGlobal = document.getElementById('filtro-ativo-global'); // Pega o novo banner
             container.innerHTML = '';
             
             const filtros = {
@@ -1816,7 +1835,7 @@
                 'Ano': document.getElementById('filtro-ano').value,
                 'Orientador': document.getElementById('filtro-orientador').value,
                 'Tipo': document.getElementById('filtro-tipo').value,
-                'Metodologia': document.getElementById('filtro-metodologia').value // NOVO
+                'Metodologia': document.getElementById('filtro-metodologia').value
             };
 
             if (activeTopic !== null && topicMap[activeTopic]) {
@@ -1824,6 +1843,13 @@
             }
 
             const temFiltros = Object.values(filtros).some(v => v !== '');
+
+            // NOVO: Lógica para mostrar/esconder o banner global
+            if (temFiltros) {
+                bannerGlobal.classList.remove('hidden');
+            } else {
+                bannerGlobal.classList.add('hidden');
+            }
 
             if (!temFiltros) {
                 container.style.display = 'none';
@@ -1934,17 +1960,14 @@
             const ano = document.getElementById('filtro-ano').value;
             const orientador = document.getElementById('filtro-orientador').value;
             const tipo = document.getElementById('filtro-tipo').value;
-            const metodologia = document.getElementById('filtro-metodologia').value; // NOVO
+            const metodologia = document.getElementById('filtro-metodologia').value;
 
-            // Filtra a partir da lista mestra
             filteredTrabalhos = trabalhosProcessados.filter(trabalho => {
                 const topicMatch = activeTopic === null || (trabalho.topic && trabalho.topic === activeTopic);
-                
-                // NOVO: Adiciona a condição de filtro por metodologia
                 const metodologiaMatch = !metodologia || (trabalho.methodologies && trabalho.methodologies.includes(metodologia));
 
                 return topicMatch &&
-                    metodologiaMatch && // <-- CONDIÇÃO ADICIONADA
+                    metodologiaMatch &&
                     (!area || (trabalho.descriptors && trabalho.descriptors.includes(area))) &&
                     (!ano || trabalho.ano === ano) &&
                     (!orientador || trabalho.orientadorNormalizado === orientador) &&
@@ -1955,6 +1978,9 @@
             trabalhosExibidos = [...filteredTrabalhos];
             currentPage = 1;
             atualizarDashboard(filteredTrabalhos);
+
+            // NOVO: Rola a visualização para a seção de trabalhos
+            document.getElementById('trabalhos').scrollIntoView({ behavior: 'smooth' });
         }
     
         // Limpar filtros
@@ -2208,10 +2234,11 @@
         /**
          * FUNÇÃO ATUALIZADA: Reverte o agrupamento de campos, mantendo a referência integrada.
          */
-         function abrirModal(trabalho) {
+        function abrirModal(trabalho) {
             const modal = document.getElementById('modal-trabalho');
             const modalTitulo = document.getElementById('modal-titulo');
             const modalConteudo = document.getElementById('modal-conteudo');
+            const btnVoltarTopo = document.getElementById('btn-voltar-topo');
             
             modalTitulo.textContent = trabalho.title;
             
@@ -2260,6 +2287,12 @@
             document.getElementById('btn-download').onclick = () => window.open(trabalho.document_url, '_blank');
             document.getElementById('btn-copiar').onclick = () => copiarTextoParaClipboard(trabalho.citation || gerarReferencia(trabalho));
 
+
+            // NOVO: Esconde o botão "Voltar ao Topo"
+            if (btnVoltarTopo) {
+                btnVoltarTopo.style.display = 'none';
+            }
+
             // Exibe o modal
             document.body.classList.add('overflow-hidden');
             modal.classList.remove('hidden');
@@ -2281,20 +2314,17 @@
         /**
          * FUNÇÃO ATUALIZADA: Fecha o modal e restaura o estado da página.
          */
-         function fecharModal() {
+        function fecharModal() {
             const modal = document.getElementById('modal-trabalho');
             const btnVoltarTopo = document.getElementById('btn-voltar-topo');
 
-            // Requisito 5: Restaura a visibilidade do botão "Voltar ao Topo"
-             if (btnVoltarTopo) {
+            // NOVO: Restaura a visibilidade do botão "Voltar ao Topo"
+            if (btnVoltarTopo) {
                 // Remove o estilo inline para que o CSS de scroll volte a controlá-lo
                 btnVoltarTopo.style.display = ''; 
             }
             
-            // Garante que a visualização do resumo seja resetada ao fechar
-            modal.classList.remove('modal-abstract-expanded');
-            
-            document.body.classList.remove('overflow-hidden'); // Libera o scroll da página
+            document.body.classList.remove('overflow-hidden');
             modal.classList.add('hidden');
         }
 
