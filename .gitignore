@@ -1,0 +1,9 @@
+/src/dataset/cache
+.idea
+.vscode
+*.log
+/src/scrapper/node_modules
+/src/scrapper/node_modules/*
+/src/scrapper/package-lock.json
+/src/scrapper/.env
+/src/nlp-procesor/.env

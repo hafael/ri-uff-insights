@@ -672,7 +672,7 @@
         <section id="filtros" class="mb-8 no-print">
             <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Filtros</h2>
             <div class="bg-white p-4 rounded-lg shadow">
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Área Temática</label>
                         <select id="filtro-area" class="w-full p-2 border rounded">
@@ -700,20 +700,21 @@
                             <option value="Tese">Tese</option>
                         </select>
                     </div>
-                    <!-- INÍCIO: NOVA SEÇÃO DE FILTRO POR TÓPICOS -->
-                    <div class="md:col-span-4 lg:col-span-4 mt-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Explorar por Tópicos Principais</label>
-                        <div id="topic-filters" class="flex flex-wrap gap-2">
-                            <!-- Botões de tópico serão inseridos aqui pelo JavaScript -->
-                        </div>
-                    </div>
-                    <!-- FIM: NOVA SEÇÃO DE FILTRO POR TÓPICOS -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Metodologia</label>
                         <select id="filtro-metodologia" class="w-full p-2 border rounded">
                             <option value="">Todas as metodologias</option>
                         </select>
                     </div>
+                    <!-- INÍCIO: NOVA SEÇÃO DE FILTRO POR TÓPICOS -->
+                    <div class="md:col-span-3 xl:col-span-5 mt-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Explorar por Tópicos Principais</label>
+                        <div id="topic-filters" class="flex flex-wrap gap-2">
+                            <!-- Botões de tópico serão inseridos aqui pelo JavaScript -->
+                        </div>
+                    </div>
+                    <!-- FIM: NOVA SEÇÃO DE FILTRO POR TÓPICOS -->
+                    
                 </div>
                 <div class="mt-4 flex justify-end">
                     <button id="btn-aplicar-filtros" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Aplicar Filtros</button>
@@ -1195,7 +1196,7 @@
 
     <script>
         // Dados do JSON (exemplo reduzido para demonstração)
-        const datasetFilePath = 'https://raw.githubusercontent.com/hafael/ri-uff-insights/refs/heads/main/dataset.json'; // Caminho para o arquivo JSON
+        const datasetFilePath = 'https://raw.githubusercontent.com/hafael/ri-uff-insights/refs/heads/main/public/dataset.json'; // Caminho para o arquivo JSON
         let datasetDate = '2025-08-30'; // Data do dataset (pode ser extraída do JSON se disponível)
         let data = [];
 
@@ -1231,6 +1232,7 @@
         let graficoEntidadesOrg = null;
         let graficoEntidadesLoc = null;
         let graficoMetodologias = null;
+        let topicosExpandidos = false;
 
         // --- FUNÇÃO PRINCIPAL DE CARREGAMENTO E INICIALIZAÇÃO ---
         async function iniciarAplicacao() {
@@ -1352,6 +1354,7 @@
 
             // Re-renderiza todos os componentes do dashboard
             renderizarDadosGerais(trabalhos); // Passa os trabalhos para os totais
+            renderizarFiltrosDeTopico();
             renderizarTrabalhos(); // Já usa a variável global 'filteredTrabalhos'
             renderizarPaginacao();
             //renderizarIndiceOrientadores();
@@ -1613,18 +1616,11 @@
             const variantes = identificarVariantesDeNomes(); 
             
             if (variantes.size === 0) {
-                tabela.innerHTML = `
-                    <tr>
-                        <td colspan="3" class="px-6 py-4 text-center text-gray-500">
-                            Nenhuma variação de nome foi identificada para normalização.
-                        </td>
-                    </tr>
-                `;
+                tabela.innerHTML = `<tr><td colspan="3" class="px-6 py-4 text-center text-gray-500">Nenhuma variação de nome foi identificada para normalização.</td></tr>`;
                 return;
             }
             
             const participacoes = new Map();
-            
             trabalhosProcessados.forEach(trabalho => {
                 if (trabalho.author) {
                     const nomeNorm = normalizarNome(trabalho.author);
@@ -1647,29 +1643,32 @@
                 }
             });
             
-            const nomesOrdenados = Array.from(variantes.entries()).sort((a, b) => 
-                a[0].localeCompare(b[0])
-            );
+            const nomesOrdenados = Array.from(variantes.entries()).sort((a, b) => a[0].localeCompare(b[0]));
             
             nomesOrdenados.forEach(([nomeNormalizado, variantesSet]) => {
                 const row = document.createElement('tr');
                 const tiposParticipacao = participacoes.get(nomeNormalizado) || new Set();
                 const tiposArray = Array.from(tiposParticipacao);
                 
-                // Adição dos atributos data-label para responsividade
                 row.innerHTML = `
-                    <td class="px-6 py-4 font-medium text-blue-800">${nomeNormalizado}</td>
+                    <td class="px-6 py-4">
+                        <button onclick="buscarPorTermo('${nomeNormalizado.replace(/'/g, "\\'")}')" class="font-medium text-blue-800 hover:underline">
+                            ${nomeNormalizado}
+                        </button>
+                    </td>
                     <td class="px-6 py-4" data-label="Variações Encontradas:">
-                        <ul class="list-disc list-inside">
-                            ${Array.from(variantesSet).map(variante => 
-                                `<li class="text-red-600">${variante}</li>`
-                            ).join('')}
+                        <ul class="list-disc list-inside space-y-1">
+                            ${Array.from(variantesSet).map(variante => `
+                                <li>
+                                    <button onclick="buscarPorTermo('${variante.replace(/'/g, "\\'")}')" class="text-red-600 hover:underline text-left">
+                                        ${variante}
+                                    </button>
+                                </li>
+                            `).join('')}
                         </ul>
                     </td>
                     <td class="px-6 py-4" data-label="Tipo:">
-                        ${tiposArray.map(tipo => 
-                            `<span class="inline-block bg-gray-100 px-2 py-1 rounded text-xs font-medium mr-1">${tipo}</span>`
-                        ).join('')}
+                        ${tiposArray.map(tipo => `<span class="inline-block bg-gray-100 px-2 py-1 rounded text-xs font-medium mr-1">${tipo}</span>`).join('')}
                     </td>
                 `;
                 tabela.appendChild(row);
@@ -2301,8 +2300,12 @@
         /**
          * NOVA FUNÇÃO AUXILIAR: Encontra um trabalho pelo ID e abre o modal.
          */
-        function abrirModalPorId(trabalhoId) {
-            const trabalho = trabalhosProcessados.find(t => t.id === trabalhoId);
+         function abrirModalPorId(trabalhoId) {
+            // CORREÇÃO: Converte o ID recebido (que é uma string do HTML) para um número
+            // antes de comparar com o ID do dataset (que é um número).
+            const idNumerico = parseInt(trabalhoId, 10);
+            const trabalho = trabalhosProcessados.find(t => t.id === idNumerico);
+            
             if (trabalho) {
                 abrirModal(trabalho);
             } else {
@@ -2438,10 +2441,11 @@
                 const row = document.createElement('tr');
                 const participacoes = participacoesBancaMap.get(nome) || 0;
 
-                // AQUI ESTÁ A MUDANÇA: Geramos uma estrutura HTML mais rica
                 row.innerHTML = `
                     <td class="person-name-cell">
-                        <div class="person-name">${nome}</div>
+                        <button onclick="buscarPorTermo('${nome.replace(/'/g, "\\'")}')" class="person-name text-left w-full hover:underline">
+                            ${nome}
+                        </button>
                     </td>
                     <td class="stats-cell">
                         <div class="stats-grid">
@@ -2466,7 +2470,6 @@
                 `;
 
                 row.classList.add('shadow-md', 'sm:shadow-none');
-
                 return row;
             };
 
@@ -2499,10 +2502,11 @@
                 else if (dados.dissertacao > 0) evolucao = 'Dissertação';
                 else if (dados.tese > 0) evolucao = 'Tese';
                 
-                // AQUI ESTÁ A MUDANÇA: Geramos uma estrutura HTML mais rica
                 row.innerHTML = `
                     <td class="person-name-cell">
-                        <div class="person-name">${nome}</div>
+                        <button onclick="buscarPorTermo('${nome.replace(/'/g, "\\'")}')" class="person-name text-left w-full hover:underline">
+                            ${nome}
+                        </button>
                     </td>
                     <td class="stats-cell">
                         <div class="stats-grid stats-grid-autores">
@@ -2565,26 +2569,18 @@
                 return;
             }
             
-            // Define o peso de cada tipo de trabalho para a ordenação
             const tipoPeso = { 'TCC': 1, 'Dissertação': 2, 'Tese': 3, 'Outro': 4 };
 
             autoresComEvolucao.forEach(([nome, dados]) => {
                 const autorEl = document.createElement('div');
                 autorEl.className = 'bg-gray-50 p-4 rounded-lg border';
                 
-                // AQUI ESTÁ A CORREÇÃO: Ordena primeiro pelo peso do tipo, depois pelo ano
                 const trabalhosAutor = trabalhosProcessados
                     .filter(t => t.autorNormalizado === nome)
                     .sort((a, b) => {
                         const pesoA = tipoPeso[a.tipo] || 99;
                         const pesoB = tipoPeso[b.tipo] || 99;
-                        
-                        // Se os níveis forem diferentes, ordena pelo nível
-                        if (pesoA !== pesoB) {
-                            return pesoA - pesoB;
-                        }
-                        
-                        // Se os níveis forem iguais, ordena pelo ano
+                        if (pesoA !== pesoB) return pesoA - pesoB;
                         return (a.ano || 0) - (b.ano || 0); 
                     });
                 
@@ -2600,7 +2596,11 @@
                 }).join('');
                 
                 autorEl.innerHTML = `
-                    <h3 class="font-semibold text-blue-800 text-lg">${nome}</h3>
+                    <h3 class="font-semibold text-blue-800 text-lg">
+                        <button onclick="buscarPorTermo('${nome.replace(/'/g, "\\'")}')" class="text-left w-full hover:underline">
+                            ${nome}
+                        </button>
+                    </h3>
                     <div class="mt-2">${trabalhosHTML}</div>
                 `;
                 
@@ -3172,11 +3172,10 @@
         /**
          * Renderiza a tabela principal do Mapa Temático com a contagem de trabalhos por tema.
          */
-         function renderizarMapaTematicoTabela(temasParaRenderizar) { // Agora aceita um array
+         function renderizarMapaTematicoTabela(temasParaRenderizar) {
             const corpoTabela = document.getElementById('corpo-tabela-temas');
             const containerBotao = document.getElementById('temas-ver-mais-container');
 
-            // Calcula o total de trabalhos por tema para o ranking
             const temasComTotal = Array.from(temasMap.entries()).map(([tema, dados]) => ({
                 tema,
                 total: dados.tcc + dados.dissertacao + dados.tese
@@ -3184,13 +3183,15 @@
             temasComTotal.sort((a, b) => b.total - a.total);
             const top10Temas = new Set(temasComTotal.slice(0, 10).map(item => item.tema));
 
-            // A função de renderizar a linha permanece a mesma, mas agora usa o array filtrado
             const renderizarLinha = ([tema, dados]) => {
                 const row = document.createElement('tr');
                 const isTop10 = top10Temas.has(tema);
                 row.innerHTML = `
-                    <td class="px-6 py-4 font-medium text-gray-800" data-label="Tema Principal">
-                        ${tema} ${isTop10 ? '<span title="Top 10 temas mais frequentes">🚩</span>' : ''}
+                    <td class="px-6 py-4" data-label="Tema Principal">
+                        <button onclick="buscarPorTermo('${tema.replace(/'/g, "\\'")}')" class="font-medium text-gray-800 hover:text-blue-600 hover:underline text-left">
+                            ${tema}
+                        </button>
+                        ${isTop10 ? '<span title="Top 10 temas mais frequentes">🚩</span>' : ''}
                     </td>
                     <td class="px-6 py-4 text-center" data-label="TCCs">${dados.tcc}</td>
                     <td class="px-6 py-4 text-center" data-label="Dissertações">${dados.dissertacao}</td>
@@ -3602,19 +3603,70 @@
             return textoDestacado;
         }
 
-        function renderizarFiltrosDeTopico() {
+        /**
+         * Renderiza os botões de filtro para cada tópico no mapa.
+         * MOSTRA APENAS OS 3 TÓPICOS MAIS USADOS, COM OPÇÃO DE EXPANDIR.
+         */
+         function renderizarFiltrosDeTopico() {
             const container = document.getElementById('topic-filters');
-            container.innerHTML = '';
-            const criarBotao = (texto, id) => {
+            container.innerHTML = ''; // Limpa antes de renderizar
+
+            // 1. Contar a frequência de cada tópico nos dados filtrados atualmente
+            const topicCounts = new Map();
+            filteredTrabalhos.forEach(trabalho => {
+                if (trabalho.topic) {
+                    topicCounts.set(trabalho.topic, (topicCounts.get(trabalho.topic) || 0) + 1);
+                }
+            });
+
+            // 2. Ordenar os tópicos pela contagem (do maior para o menor)
+            const topicosOrdenados = Object.entries(topicMap)
+                .map(([id, name]) => ({
+                    id: parseInt(id, 10),
+                    name: name,
+                    count: topicCounts.get(parseInt(id, 10)) || 0
+                }))
+                .sort((a, b) => b.count - a.count);
+
+            // 3. Determinar quais tópicos exibir
+            const topicosParaExibir = topicosExpandidos ? topicosOrdenados : topicosOrdenados.slice(0, 3);
+
+            // 4. Renderizar os botões dos tópicos
+            topicosParaExibir.forEach(({ id, name }) => {
                 const button = document.createElement('button');
-                button.textContent = texto;
+                button.textContent = name;
                 button.dataset.topicId = id;
                 button.className = 'px-3 py-1 text-sm font-medium border rounded-full transition-colors duration-200 text-gray-700 bg-white border-gray-300 hover:bg-gray-100';
+                
+                // Mantém o botão ativo destacado visualmente
+                if (id === activeTopic) {
+                    button.classList.remove('bg-white', 'text-gray-700', 'border-gray-300');
+                    button.classList.add('bg-blue-600', 'text-white', 'border-blue-600');
+                }
+
                 button.addEventListener('click', () => filtrarPorTopico(id));
-                return button;
-            };
-            for (const [id, name] of Object.entries(topicMap)) {
-                container.appendChild(criarBotao(name, id));
+                container.appendChild(button);
+            });
+
+            // 5. Adicionar os botões "Mostrar mais" ou "Mostrar menos"
+            if (topicosOrdenados.length > 3) {
+                const toggleButton = document.createElement('button');
+                toggleButton.className = 'text-sm font-semibold text-blue-600 hover:underline';
+                
+                if (topicosExpandidos) {
+                    toggleButton.textContent = 'Mostrar menos';
+                    toggleButton.onclick = () => {
+                        topicosExpandidos = false;
+                        renderizarFiltrosDeTopico(); // Re-renderiza a seção
+                    };
+                } else {
+                    toggleButton.textContent = `Mostrar todos os ${topicosOrdenados.length} tópicos...`;
+                    toggleButton.onclick = () => {
+                        topicosExpandidos = true;
+                        renderizarFiltrosDeTopico(); // Re-renderiza a seção
+                    };
+                }
+                container.appendChild(toggleButton);
             }
         }
 

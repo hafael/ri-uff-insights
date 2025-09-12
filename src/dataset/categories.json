@@ -1,0 +1,242 @@
+{
+    "name": "Ciência da Informação",
+    "children": [
+        {
+            "name": "Sistemas de Informação",
+            "children": [
+                {
+                    "name": "Tecnologia da Informação",
+                    "children": [
+                        {
+                            "name": "Ciência da Computação"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Sistemas de Recuperação da Informação",
+            "children": [
+                {
+                    "name": "Ciência da Computação"
+                },
+                {
+                    "name": "Biblioteconomia"
+                },
+                {
+                    "name": "Ciência da Computação"
+                },
+                {
+                    "name": "Linguística"
+                }
+            ]
+        },
+        {
+            "name": "Políticas de Informação",
+            "children": [
+                {
+                    "name": "Administração"
+                },
+                {
+                    "name": "Ciência Política"
+                },
+                {
+                    "name": "Direito"
+                }
+            ]
+        },
+        {
+            "name": "Necessidades e usos de informação",
+            "children": [
+                {
+                    "name": "Arquivologia"
+                },
+                {
+                    "name": "Biblioteconomia"
+                },
+                {
+                    "name": "Filosofia"
+                },
+                {
+                    "name": "Linguística"
+                },
+                {
+                    "name": "Museologia"
+                }
+            ]
+        },
+        {
+            "name": "Representação da Informação",
+            "children": [
+                {
+                    "name": "Arquivologia"
+                },
+                {
+                    "name": "Biblioteconomia"
+                },
+                {
+                    "name": "Museologia"
+                },
+                {
+                    "name": "Psicologia"
+                },
+                {
+                    "name": "Epistemologia"
+                },
+                {
+                    "name": "Filosofia"
+                },
+                {
+                    "name": "Filosofia da Ciência"
+                }
+            ]
+        },
+        {
+            "name": "Teoria da Ciência da Informação",
+            "children": [
+                {
+                    "name": "Filosofia da Ciência"
+                },
+                {
+                    "name": "Matemática"
+                },
+                {
+                    "name": "Educação"
+                },
+                {
+                    "name": "Ética"
+                }
+            ]
+        },
+        {
+            "name": "Formação e aspectos profissionais",
+            "children": []
+        },
+        {
+            "name": "Gestão da Informação",
+            "children": [
+                {
+                    "name": "Administração"
+                },
+                {
+                    "name": "Economia"
+                },
+                {
+                    "name": "Estatística"
+                },
+                {
+                    "name": "Direito"
+                }
+            ]
+        },
+        {
+            "name": "Base de dados",
+            "children": [
+                {
+                    "name": "Ciência da Computação"
+                },
+                {
+                    "name": "Linguística"
+                }
+            ]
+        },
+        {
+            "name": "Processamento automático da linguagem",
+            "children": [
+                {
+                    "name": "Biblioteconomia"
+                },
+                {
+                    "name": "Ciência da Computação"
+                },
+                {
+                    "name": "Linguística"
+                }
+            ]
+        },
+        {
+            "name": "Economia da Informação",
+            "children": [
+                {
+                    "name": "Administração"
+                },
+                {
+                    "name": "Economia"
+                }
+            ]
+        },
+        {
+            "name": "Bibliometria",
+            "children": [
+                {
+                    "name": "Estatística"
+                },
+                {
+                    "name": "História da Ciência"
+                },
+                {
+                    "name": "Matemática"
+                },
+                {
+                    "name": "Sociologia da Ciência"
+                }
+            ]
+        },
+        {
+            "name": "Inteligência competitiva e Gestão do Conhecimento",
+            "children": [
+                {
+                    "name": "Administração"
+                },
+                {
+                    "name": "Economia"
+                }
+            ]
+        },
+        {
+            "name": "Mineração de dados",
+            "children": [
+                {
+                    "name": "Ciência da Computação"
+                },
+                {
+                    "name": "Estatística"
+                },
+                {
+                    "name": "História da Ciência"
+                },
+                {
+                    "name": "Sociologia da Ciência"
+                }
+            ]
+        },
+        {
+            "name": "Comunicação Científica Eletrônica",
+            "children": [
+                {
+                    "name": "Ciência da Computação"
+                },
+                {
+                    "name": "Comunicação"
+                },
+                {
+                    "name": "Sociologia da Ciência"
+                }
+            ]
+        },
+        {
+            "name": "Bibliotecas Virtuais/Digitais",
+            "children": [
+                {
+                    "name": "Biblioteconomia"
+                },
+                {
+                    "name": "Ciência da Computação"
+                },
+                {
+                    "name": "Administração"
+                }
+            ]
+        }
+    ]
+}

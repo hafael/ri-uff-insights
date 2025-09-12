@@ -1,0 +1,17 @@
+# Para manipulação de dados
+pandas==2.2.2
+
+# Para NLP (Modelagem de Tópicos, Vetorização)
+scikit-learn==1.5.0
+
+# Para NLP (NER, Processamento de Texto)
+spacy==3.7.5
+
+# Para NLP (Cálculo de Similaridade via Embeddings)
+sentence-transformers==3.0.1
+
+# Dependência do sentence-transformers
+torch==2.3.1
+
+# Natural Language Toolkit
+nltk==3.9.1

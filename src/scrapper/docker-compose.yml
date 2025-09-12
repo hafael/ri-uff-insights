@@ -1,0 +1,19 @@
+# docker-compose.yml
+
+version: '3.8'
+
+services:
+  scraper:
+    # Nome do container
+    container_name: riuff-scraper
+    # Constrói a imagem a partir do Dockerfile no diretório atual
+    build: .
+    # Mapeia o diretório atual para o diretório de trabalho no container
+    # Isso permite que os arquivos de saída (JSON, cache) sejam salvos na sua máquina
+    volumes:
+      - ./../dataset:/app/dataset
+    # Comando para iniciar o container.
+    # Adicione o ano limite aqui se desejar um valor padrão.
+    # Exemplo para buscar itens a partir de 2022:
+    # command: node main.js 2022
+    command: node main.js

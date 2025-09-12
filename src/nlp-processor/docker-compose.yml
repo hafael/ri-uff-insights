@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  nlp-processor:
+    container_name: riuff-nlp-processor
+    # Constrói a imagem a partir do Dockerfile no diretório atual
+    build: .
+    # Mapeia o diretório local './dados' para o diretório '/app/dados' no contêiner.
+    # Isso permite que o contêiner leia e escreva arquivos diretamente na sua pasta local.
+    volumes:
+      - ./../dataset:/app/dataset
+    # Comando para iniciar o container.
+    command: python processador_nlp.py
