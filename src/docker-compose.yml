@@ -1,29 +1,38 @@
-version: '3.5'
+version: '3.8'
 
-networks:
-  frontend:
-    driver: bridge
-  backend:
-    driver: bridge
-volumes:
-  dataset:
-    driver: local
 services:
-  ### NLP Processor ###########################################
-  nlp-processor:
-    build:
-        context: ./nlp-processor
-    volumes:
-        - dataset:app/dataset
-    networks:
-        - frontend
-        - backend
-  ### Dataset Scrapper ###########################################
   scrapper:
     build:
-        context: ./scrapper
+      context: ./scrapper
     volumes:
-        - dataset:app/dataset
+      - ./dataset:/usr/src/app/dataset
     networks:
-        - frontend
-        - backend
+      - app-network
+
+  nlp-processor:
+    build:
+      context: ./nlp-processor
+    volumes:
+      - ./dataset:/app/dataset
+    networks:
+      - app-network
+
+  api-server:
+    build:
+      context: ./api-server
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network
+
+  grobid:
+    image: grobid/grobid:0.8.0-crf
+    ports:
+      - "8070:8070" # Porta da API
+      - "8071:8071" # Porta de administração
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
