@@ -1,0 +1,29 @@
+version: '3.5'
+
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge
+volumes:
+  dataset:
+    driver: local
+services:
+  ### NLP Processor ###########################################
+  nlp-processor:
+    build:
+        context: ./nlp-processor
+    volumes:
+        - dataset:app/dataset
+    networks:
+        - frontend
+        - backend
+  ### Dataset Scrapper ###########################################
+  scrapper:
+    build:
+        context: ./scrapper
+    volumes:
+        - dataset:app/dataset
+    networks:
+        - frontend
+        - backend
