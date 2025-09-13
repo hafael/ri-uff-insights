@@ -1,0 +1,11 @@
+{
+  "name": "training-web",
+  "version": "1.0.0",
+  "description": "Interface para treinar o modelo GROBID.",
+  "scripts": {
+    "build:css": "npx tailwindcss -i ./src/style.css -o ./public/style.css"
+  },
+  "dependencies": {
+    "tailwindcss": "^3.3.3"
+  }
+}

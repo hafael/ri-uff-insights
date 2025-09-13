@@ -17,21 +17,43 @@ services:
     networks:
       - app-network
 
+  grobid:
+    image: grobid/grobid:0.8.2-crf
+    ports:
+      - "8070:8070"
+      - "8071:8071"
+    networks:
+      - app-network
+    volumes:
+      - ./dataset/grobid:/opt/grobid/grobid-home
+
   api-server:
     build:
       context: ./api-server
     ports:
       - "3000:3000"
+    volumes:
+      - ./dataset:/usr/src/app/dataset
     networks:
       - app-network
+    depends_on:
+      - grobid
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  grobid:
-    image: grobid/grobid:0.8.0-crf
+  training-web:
+    build:
+      context: ./training-web
     ports:
-      - "8070:8070" # Porta da API
-      - "8071:8071" # Porta de administração
+      - "8080:80"
     networks:
       - app-network
+    depends_on:
+      api-server:
+        condition: service_healthy
 
 networks:
   app-network:

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="h-full bg-gray-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treinamento do GROBID</title>
+    <link href="/style.css" rel="stylesheet">
+</head>
+<body class="h-full">
+    <div class="min-h-full">
+        <header class="bg-white shadow">
+            <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+                <h1 class="text-3xl font-bold tracking-tight text-gray-900">Ferramenta de Treinamento GROBID - Referências</h1>
+            </div>
+        </header>
+        <main class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
+            <div class="mb-4">
+                <label for="pdf-select" class="block text-sm font-medium text-gray-700">Escolha um PDF do dataset:</label>
+                <select id="pdf-select" class="mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+                    <option>Carregando...</option>
+                </select>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h2 class="text-xl font-semibold mb-2">Visualizador de PDF</h2>
+                    <div id="pdf-viewer" class="border rounded-md p-4 bg-gray-200 h-[70vh] overflow-auto">
+                        <p class="text-center text-gray-500">O visualizador de PDF será implementado aqui.</p>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-xl font-semibold mb-2">Dados de Treinamento (Referências)</h2>
+                    <form id="training-form" class="space-y-3">
+                        <div>
+                            <label for="authors" class="block text-sm font-medium text-gray-700">Autores (separados por vírgula)</label>
+                            <input type="text" id="authors" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm">
+                        </div>
+                        <div>
+                            <label for="title" class="block text-sm font-medium text-gray-700">Título do Artigo/Capítulo</label>
+                            <input type="text" id="title" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm">
+                        </div>
+                        <div>
+                            <label for="journal" class="block text-sm font-medium text-gray-700">Nome do Journal/Livro</label>
+                            <input type="text" id="journal" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm">
+                        </div>
+                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div>
+                                <label for="year" class="block text-sm font-medium text-gray-700">Ano</label>
+                                <input type="number" id="year" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm">
+                            </div>
+                            <div>
+                                <label for="volume" class="block text-sm font-medium text-gray-700">Volume</label>
+                                <input type="text" id="volume" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm">
+                            </div>
+                             <div>
+                                <label for="pages" class="block text-sm font-medium text-gray-700">Páginas (ex: 10-25)</label>
+                                <input type="text" id="pages" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="full_text" class="block text-sm font-medium text-gray-700">Referência Completa (texto original)</label>
+                            <textarea id="full_text" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" placeholder="Copie e cole a referência original do PDF aqui..."></textarea>
+                        </div>
+                         <button type="submit" class="w-full px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Enviar para Treinamento</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="/script.js"></script>
+</body>
+</html>
